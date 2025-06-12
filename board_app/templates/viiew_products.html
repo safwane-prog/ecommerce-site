@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة المنتجات - المتجر الإلكتروني</title>
+    <link rel="stylesheet" href="/static/products.css">
+        <link rel="stylesheet" href="/static/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+</head>
+<body>
+    <div class="dashboard">
+        <!-- الشريط الجانبي -->
+        <div class="sidebar">
+            <div class="logo">
+                <i class="fas fa-store"></i>
+                <span>المتجر الإلكتروني</span>
+            </div>
+                 <ul class="menu">
+                    <li>
+                        <a href="{% url 'dashboard' %}">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>الرئيسية</span>
+                        </a>
+                    </li>
+                    <li  class="active">
+                        <a href="{% url 'views_product' %}">
+                            <i class="fas fa-box-open"></i>
+                            <span>المنتجات</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'orders' %}">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span>الطلبات</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="{% url 'massage' %}">
+                            <i class="fas fa-envelope"></i>
+                            <span>الرسائل</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'settings' %}">
+                            <i class="fas fa-cog"></i>
+                            <span>الإعدادات</span>
+                        </a>
+                    </li>
+                </ul>
+        </div>
+
+        <!-- المحتوى الرئيسي -->
+        <div class="main-content">
+            <!-- شريط العنوان -->
+            <div class="header">
+                <div class="search">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="بحث عن منتج...">
+                </div>
+                <div class="user-area">
+                    <div class="notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge">3</span>
+                    </div>
+                    <div class="user">
+                        <img src="https://via.placeholder.com/40" alt="صورة المستخدم">
+                        <span>مدير المتجر</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- أدوات التحكم بالمنتجات -->
+            <div class="products-controls">
+                <h2>إدارة المنتجات</h2>
+                <div class="controls">
+                    <a id="add_product" href="{% url 'add_product' %}">
+                        <button class="btn btn-primary">
+                            <i class="fas fa-plus"></i> إضافة منتج جديد
+                        </button>
+                    </a>
+                    <div class="filters">
+                        <select id="categoryFilter">
+                            <option value="">جميع الفئات</option>
+                            <!-- سيتم ملء الفئات ديناميكيًا -->
+                        </select>
+                        <select id="sortFilter">
+                            <option value="">الترتيب الافتراضي</option>
+                            <option value="latest">الأحدث</option>
+                            <option value="oldest">الأقدم</option>
+                            <option value="price_asc">السعر (من الأقل)</option>
+                            <option value="price_desc">السعر (من الأعلى)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- جدول المنتجات -->
+            <div class="products-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>الصورة</th>
+                            <th>اسم المنتج</th>
+                            <th>الفئة</th>
+                            <th>السعر</th>
+                            <th>الألوان</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productsTableBody">
+                        <!-- سيتم ملء هذا الجزء ديناميكيًا بواسطة JavaScript -->
+                    </tbody>
+                </table>
+
+                <!-- الترقيم الصفحي -->
+                <div class="pagination" id="pagination">
+                    <!-- سيتم ملء هذا الجزء ديناميكيًا بواسطة JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+document.addEventListener('DOMContentLoaded', () => {
+    const productsApiUrl = 'http://127.0.0.1:8000/api/products/';
+    const categoriesApiUrl = 'http://127.0.0.1:8000/api/categories/';
+    let currentPage = 1;
+    const itemsPerPage = 5;
+    let totalPages = 1;
+    let products = [];
+    let filteredProducts = [];
+    let categories = [];
+
+    const productsTableBody = document.getElementById('productsTableBody');
+    const paginationContainer = document.getElementById('pagination');
+    const searchInput = document.getElementById('searchInput');
+    const categoryFilter = document.getElementById('categoryFilter');
+    const sortFilter = document.getElementById('sortFilter');
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    // جلب الفئات
+    async function fetchCategories() {
+        try {
+            const response = await fetch(categoriesApiUrl);
+            if (!response.ok) throw new Error(`فشل جلب الفئات: ${response.status}`);
+            categories = await response.json();
+            if (!Array.isArray(categories)) categories = [categories];
+            
+            categoryFilter.innerHTML = '<option value="">جميع الفئات</option>';
+            categories.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category.id;
+                option.textContent = category.name;
+                categoryFilter.appendChild(option);
+            });
+        } catch (error) {
+            console.error('خطأ في جلب الفئات:', error);
+            categoryFilter.innerHTML = '<option value="">غير قادر على جلب الفئات</option>';
+        }
+    }
+
+    // جلب المنتجات
+    async function fetchProducts() {
+        try {
+            const response = await fetch(productsApiUrl);
+            if (!response.ok) throw new Error(`فشل جلب المنتجات: ${response.status}`);
+            products = await response.json();
+            if (!Array.isArray(products)) products = [products];
+            filteredProducts = [...products];
+            filterAndSortProducts();
+        } catch (error) {
+            console.error('خطأ في جلب المنتجات:', error);
+            productsTableBody.innerHTML = `<tr><td colspan="7">حدث خطأ: ${error.message}</td></tr>`;
+        }
+    }
+
+    // تصفية وفرز المنتجات
+    function filterAndSortProducts() {
+        const search = searchInput.value.trim().toLowerCase();
+        const categoryId = categoryFilter.value;
+        const sort = sortFilter.value;
+
+        filteredProducts = products.filter(product => {
+            const matchesSearch = product.name.toLowerCase().includes(search);
+            const matchesCategory = !categoryId || product.category === parseInt(categoryId);
+            return matchesSearch && matchesCategory;
+        });
+
+        if (sort) {
+            filteredProducts.sort((a, b) => {
+                if (sort === 'latest') return b.id - a.id;
+                if (sort === 'oldest') return a.id - b.id;
+                if (sort === 'price_asc') return parseFloat(a.price) - parseFloat(b.price);
+                if (sort === 'price_desc') return parseFloat(b.price) - parseFloat(a.price);
+                return 0;
+            });
+        }
+
+        totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+        currentPage = Math.min(currentPage, totalPages || 1);
+        renderProducts();
+        renderPagination();
+    }
+
+    // عرض المنتجات
+    function renderProducts() {
+        productsTableBody.innerHTML = '';
+        
+        if (filteredProducts.length === 0) {
+            productsTableBody.innerHTML = '<tr><td colspan="7">لا توجد منتجات متاحة</td></tr>';
+            return;
+        }
+        
+        const start = (currentPage - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+        const paginatedProducts = filteredProducts.slice(start, end);
+
+        paginatedProducts.forEach((product, index) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${start + index + 1}</td>
+                <td><img src="${product.image_1 || 'https://via.placeholder.com/50'}" alt="صورة المنتج" style="width: 50px; height: 50px; object-fit: cover;"></td>
+                <td>${product.name || 'غير متوفر'}</td>
+                <td>${product.category_name || 'غير متوفر'}</td>
+                <td>${product.price ? `${parseFloat(product.price).toFixed(2)} ر.س` : 'غير متوفر'}</td>
+                <td>${product.colors_names && Array.isArray(product.colors_names) ? product.colors_names.join(', ') : 'غير متوفر'}</td>
+                <td>
+                    <button onclick="(editProduct(${product.id}))"  class="action-btn edit" data-id="${product.id}"><i class="fas fa-edit"></i></button>
+                    <button onclick="(deleteProduct(${product.id}))" class="action-btn delete" data-id="${product.id}"><i class="fas fa-trash"></i></button>
+                </td>
+            `;
+            productsTableBody.appendChild(row);
+        });
+
+        document.querySelectorAll('.edit').forEach(button => {
+            button.addEventListener('click', () => editProduct(button.dataset.id));
+        });
+        
+        document.querySelectorAll('.delete').forEach(button => {
+            button.addEventListener('click', () => deleteProduct(button.dataset.id));
+        });
+    }
+    function editProduct(id) {
+        window.location.href = `/DashBoard/edit_product/${id}/`;
+    }
+async function deleteProduct(id) {
+        if (!confirm('هل أنت متأكد من حذف هذا المنتج؟')) return;
+        
+        try {
+            const csrftoken = getCookie('csrftoken');
+            const response = await fetch(`${productsApiUrl}${id}/`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+                throw new Error(`Failed to delete product: ${response.status} ${response.statusText}`);
+            }
+
+            // إذا كان المنتج المحذوف هو الأخير في الصفحة الحالية وكانت ليست الصفحة الأولى
+            if (products.length === 1 && currentPage > 1) {
+                currentPage--;
+            }
+            
+            fetchProducts(currentPage, searchInput.value, categoryFilter.value, sortFilter.value);
+            alert('تم حذف المنتج بنجاح');
+        } catch (error) {
+            console.error('Error deleting product:', error);
+            alert(`حدث خطأ أثناء حذف المنتج: ${error.message}`);
+        }
+    }
+    // عرض الترقيم الصفحي
+    function renderPagination() {
+        paginationContainer.innerHTML = '';
+        
+        if (totalPages <= 1) return;
+        
+        const maxPagesToShow = 5;
+        let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+        let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+
+        if (endPage - startPage + 1 < maxPagesToShow) {
+            startPage = Math.max(1, endPage - maxPagesToShow + 1);
+        }
+
+        const prevButton = document.createElement('button');
+        prevButton.className = 'page-btn';
+        prevButton.innerHTML = '<i class="fas fa-angle-right"></i>';
+        prevButton.disabled = currentPage === 1;
+        prevButton.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderProducts();
+                renderPagination();
+            }
+        });
+        paginationContainer.appendChild(prevButton);
+
+        if (startPage > 1) {
+            const firstPageButton = document.createElement('button');
+            firstPageButton.className = 'page-btn';
+            firstPageButton.textContent = '1';
+            firstPageButton.addEventListener('click', () => {
+                currentPage = 1;
+                renderProducts();
+                renderPagination();
+            });
+            paginationContainer.appendChild(firstPageButton);
+            
+            if (startPage > 2) {
+                const ellipsis = document.createElement('span');
+                ellipsis.textContent = '...';
+                ellipsis.style.margin = '0 5px';
+                paginationContainer.appendChild(ellipsis);
+            }
+        }
+
+        for (let i = startPage; i <= endPage; i++) {
+            const pageButton = document.createElement('button');
+            pageButton.className = `page-btn ${i === currentPage ? 'active' : ''}`;
+            pageButton.textContent = i;
+            pageButton.addEventListener('click', () => {
+                currentPage = i;
+                renderProducts();
+                renderPagination();
+            });
+            paginationContainer.appendChild(pageButton);
+        }
+
+        if (endPage < totalPages) {
+            if (endPage < totalPages - 1) {
+                const ellipsis = document.createElement('span');
+                ellipsis.textContent = '...';
+                ellipsis.style.margin = '0 5px';
+                paginationContainer.appendChild(ellipsis);
+            }
+            
+            const lastPageButton = document.createElement('button');
+            lastPageButton.className = 'page-btn';
+            lastPageButton.textContent = totalPages;
+            lastPageButton.addEventListener('click', () => {
+                currentPage = totalPages;
+                renderProducts();
+                renderPagination();
+            });
+            paginationContainer.appendChild(lastPageButton);
+        }
+
+        const nextButton = document.createElement('button');
+        nextButton.className = 'page-btn';
+        nextButton.innerHTML = '<i class="fas fa-angle-left"></i>';
+        nextButton.disabled = currentPage === totalPages;
+        nextButton.addEventListener('click', () => {
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderProducts();
+                renderPagination();
+            }
+        });
+        paginationContainer.appendChild(nextButton);
+    }
+
+    // مستمعات الأحداث
+    searchInput.addEventListener('input', debounce(() => {
+        currentPage = 1;
+        filterAndSortProducts();
+    }, 300));
+
+    categoryFilter.addEventListener('change', () => {
+        currentPage = 1;
+        filterAndSortProducts();
+    });
+
+    sortFilter.addEventListener('change', () => {
+        currentPage = 1;
+        filterAndSortProducts();
+    });
+
+    // دالة تأخير البحث
+    function debounce(func, wait) {
+        let timeout;
+        return function() {
+            const context = this;
+            const args = arguments;
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                func.apply(context, args);
+            }, wait);
+        };
+    }
+
+    // تهيئة الصفحة
+    fetchCategories();
+    fetchProducts();
+});
+    </script>
+</body>
+</html>

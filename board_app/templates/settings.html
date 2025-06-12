@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الإعدادات - لوحة تحكم المتجر الإلكتروني</title>
+    <link rel="stylesheet" href="\static\dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --info-color: #3b82f6;
+            --light-color: #f8fafc;
+            --sidebar-active: #3b82f6;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: #f1f5f9;
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+
+      
+
+        .settings-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        .settings-sidebar {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+            height: fit-content;
+            position: sticky;
+            top: 2rem;
+        }
+
+        .settings-nav {
+            list-style: none;
+        }
+
+        .settings-nav li {
+            margin-bottom: 0.5rem;
+        }
+
+        .settings-nav a {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1rem;
+            color: #6b7280;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: var(--transition);
+            font-size: 0.95rem;
+        }
+
+        .settings-nav a:hover {
+            background: #f1f5f9;
+            color: var(--primary-color);
+        }
+
+        .settings-nav a.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .settings-nav a i {
+            margin-left: 0.8rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .settings-content {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: var(--card-shadow);
+        }
+
+        .settings-section {
+            display: none;
+        }
+
+        .settings-section.active {
+            display: block;
+        }
+
+        .section-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--dark-color);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-title i {
+            margin-left: 0.8rem;
+            color: var(--primary-color);
+        }
+
+        .section-description {
+            color: #6b7280;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--dark-color);
+            font-size: 0.9rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            background: white;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+            background-position: left 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-left: 2.5rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn i {
+            margin-left: 0.5rem;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .upload-area {
+            border: 2px dashed #e5e7eb;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            background: #f8fafc;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary-color);
+            background: rgba(30, 58, 138, 0.05);
+        }
+
+        .upload-area.dragover {
+            border-color: var(--primary-color);
+            background: rgba(30, 58, 138, 0.1);
+        }
+
+        .upload-icon {
+            font-size: 2rem;
+            color: #6b7280;
+            margin-bottom: 1rem;
+        }
+
+        .upload-text {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
+        .file-preview {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .file-preview img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .file-info {
+            flex: 1;
+        }
+
+        .file-name {
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .file-size {
+            font-size: 0.8rem;
+            color: #6b7280;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            margin-top: 1.5rem;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .table th,
+        .table td {
+            padding: 1rem;
+            text-align: right;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .table th {
+            background: #f1f5f9;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--success-color);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
+        .toast.error {
+            background: var(--danger-color);
+        }
+
+        @media (max-width: 992px) {
+            .settings-container {
+                grid-template-columns: 1fr;
+            }
+
+            .settings-sidebar {
+                position: static;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                margin-right: 0;
+                padding: 1rem;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .search {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- الشريط الجانبي -->
+        <div class="sidebar">
+            <div class="logo">
+                <i class="fas fa-store"></i>
+                <span>المتجر الإلكتروني</span>
+            </div>
+            <ul class="menu">
+                <li><a href="{% url 'dashboard' %}"><i class="fas fa-tachometer-alt"></i><span>الرئيسية</span></a></li>
+                <li><a href="{% url 'views_product' %}"><i class="fas fa-box-open"></i><span>المنتجات</span></a></li>
+                <li><a href="{% url 'orders' %}"><i class="fas fa-shopping-cart"></i><span>الطلبات</span></a></li>
+                <li><a href="{% url 'massage' %}"><i class="fas fa-envelope"></i><span>الرسائل</span></a></li>
+                <li><a class="active" href="{% url 'settings' %}"><i class="fas fa-cog"></i><span>الإعدادات</span></a></li>
+            </ul>
+        </div>
+
+        <!-- المحتوى الرئيسي -->
+        <div class="main-content">
+            <!-- شريط العنوان -->
+            <div class="header">
+                <div class="search">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="بحث...">
+                </div>
+                <div class="user-area">
+                    <div class="notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge">3</span>
+                    </div>
+                    <div class="user">
+                        <img src="https://via.placeholder.com/40" alt="صورة المستخدم">
+                        <span>مدير المتجر</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- إعدادات الصفحة -->
+            <div class="settings-container">
+                <!-- شريط الإعدادات الجانبي -->
+                <div class="settings-sidebar">
+                    <ul class="settings-nav">
+                        <li><a href="#colors" class="settings-nav-link active" data-section="colors"><i class="fas fa-palette"></i><span>الألوان</span></a></li>
+                        <li><a href="#sizes" class="settings-nav-link" data-section="sizes"><i class="fas fa-ruler"></i><span>الأحجام</span></a></li>
+                        <li><a href="#categories" class="settings-nav-link" data-section="categories"><i class="fas fa-tags"></i><span>الفئات</span></a></li>
+                        <li><a href="#store-settings" class="settings-nav-link" data-section="store-settings"><i class="fas fa-store-alt"></i><span>إعدادات المتجر الإضافية</span></a></li>
+                        <li><a href="#admin-profile" class="settings-nav-link" data-section="admin-profile"><i class="fas fa-user-shield"></i><span>ملف المدير</span></a></li>
+                        <li><a href="#contact" class="settings-nav-link" data-section="contact"><i class="fas fa-address-book"></i><span>معلومات التواصل</span></a></li>
+                    </ul>
+                </div>
+
+                <!-- محتوى الإعدادات -->
+                <div class="settings-content">
+                    <!-- الألوان -->
+                    <div class="settings-section active" id="colors">
+                        <h2 class="section-title"><i class="fas fa-palette"></i> الألوان</h2>
+                        <p class="section-description">إدارة الألوان المتاحة للمنتجات</p>
+                        <form class="settings-form" id="colorForm">
+                            <div class="form-group">
+                                <label class="form-label">اسم اللون</label>
+                                <input type="text" class="form-input" id="colorName" placeholder="أدخل اسم اللون" required>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary"><i class="fas fa-plus"></i> إضافة لون</button>
+                            </div>
+                        </form>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead><tr><th>اسم اللون</th><th>الإجراءات</th></tr></thead>
+                                <tbody id="colorList"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- الأحجام -->
+                    <div class="settings-section" id="sizes">
+                        <h2 class="section-title"><i class="fas fa-ruler"></i> الأحجام</h2>
+                        <p class="section-description">إدارة الأحجام المتاحة للمنتجات</p>
+                        <form class="settings-form" id="sizeForm">
+                            <div class="form-group">
+                                <label class="form-label">اسم الحجم</label>
+                                <input type="text" class="form-input" id="sizeName" placeholder="أدخل اسم الحجم" required>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary"><i class="fas fa-plus"></i> إضافة حجم</button>
+                            </div>
+                        </form>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead><tr><th>اسم الحجم</th><th>الإجراءات</th></tr></thead>
+                                <tbody id="sizeList"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- الفئات -->
+                    <div class="settings-section" id="categories">
+                        <h2 class="section-title"><i class="fas fa-tags"></i> الفئات</h2>
+                        <p class="section-description">إدارة فئات المنتجات</p>
+                        <form class="settings-form" id="categoryForm">
+                            <div class="form-group">
+                                <label class="form-label">اسم الفئة</label>
+                                <input type="text" class="form-input" id="categoryName" placeholder="أدخل اسم الفئة" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">صورة الفئة</label>
+                                <div class="upload-area" id="categoryImageUpload">
+                                    <div class="upload-icon"><i class="fas fa-camera"></i></div>
+                                    <div class="upload-text"><strong>انقر لتحميل الصورة</strong> أو اسحب الملف هنا</div>
+                                </div>
+                                <div class="file-preview" id="categoryImagePreview">
+                                    <img id="categoryImage" src="" alt="معاينة الصورة">
+                                    <div class="file-info">
+                                        <div class="file-name" id="categoryFileName"></div>
+                                        <div class="file-size" id="categoryFileSize"></div>
+                                    </div>
+                                    <button type="button" class="btn btn-danger" id="removeCategoryImage"><i class="fas fa-trash"></i></button>
+                                </div>
+                                <input type="file" id="categoryImageInput" accept="image/*" style="display: none;" required>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary"><i class="fas fa-plus"></i> إضافة فئة</button>
+                            </div>
+                        </form>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead><tr><th>اسم الفئة</th><th>صورة الفئة</th><th>الإجراءات</th></tr></thead>
+                                <tbody id="categoryList"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- إعدادات المتجر الإضافية -->
+                    <div class="settings-section" id="store-settings">
+                        <h2 class="section-title"><i class="fas fa-store-alt"></i> إعدادات المتجر الإضافية</h2>
+                        <p class="section-description">إدارة إعدادات المتجر عبر API</p>
+                        <form class="settings-form" id="storeSettingsForm">
+                            <div class="form-group">
+                                <label class="form-label">اسم المتجر</label>
+                                <input type="text" class="form-input" id="storeName" placeholder="أدخل اسم المتجر" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">شعار المتجر</label>
+                                <div class="upload-area" id="storeLogoUpload">
+                                    <div class="upload-icon"><i class="fas fa-camera"></i></div>
+                                    <div class="upload-text"><strong>انقر لتحميل الصورة</strong> أو اسحب الملف هنا</div>
+                                </div>
+                                <div class="file-preview" id="storeLogoPreview">
+                                    <img id="storeLogoImage" src="" alt="معاينة الصورة">
+                                    <div class="file-info">
+                                        <div class="file-name" id="storeLogoFileName"></div>
+                                        <div class="file-size" id="storeLogoFileSize"></div>
+                                    </div>
+                                    <button type="button" class="btn btn-danger" id="removeStoreLogo"><i class="fas fa-trash"></i></button>
+                                </div>
+                                <input type="file" id="storeLogoInput" accept="image/*" style="display: none;">
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> حفظ الإعدادات</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- ملف المدير -->
+                    <div class="settings-section" id="admin-profile">
+                        <h2 class="section-title"><i class="fas fa-user-shield"></i> ملف المدير</h2>
+                        <p class="section-description">إدارة معلومات ملف المدير</p>
+                        <form class="settings-form" id="adminProfileForm">
+                            <div class="form-group">
+                                <label class="form-label">اسم المدير</label>
+                                <input type="text" class="form-input" id="adminName" placeholder="أدخل اسم المدير" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">صورة الملف الشخصي</label>
+                                <div class="upload-area" id="adminProfileUpload">
+                                    <div class="upload-icon"><i class="fas fa-camera"></i></div>
+                                    <div class="upload-text"><strong>انقر لتحميل الصورة</strong> أو اسحب الملف هنا</div>
+                                </div>
+                                <div class="file-preview" id="adminProfilePreview">
+                                    <img id="adminProfileImage" src="" alt="معاينة الصورة">
+                                    <div class="file-info">
+                                        <div class="file-name" id="adminProfileFileName"></div>
+                                        <div class="file-size" id="adminProfileFileSize"></div>
+                                    </div>
+                                    <button type="button" class="btn btn-danger" id="removeAdminProfileImage"><i class="fas fa-trash"></i></button>
+                                </div>
+                                <input type="file" id="adminProfileInput" accept="image/*" style="display: none;">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">رقم الهاتف</label>
+                                <input type="tel" class="form-input" id="adminPhoneNumber" placeholder="أدخل رقم الهاتف">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">العنوان</label>
+                                <input type="text" class="form-input" id="adminAddress" placeholder="أدخل العنوان">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">المنصب</label>
+                                <input type="text" class="form-input" id="adminPosition" placeholder="أدخل المنصب">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">نبذة شخصية</label>
+                                <textarea class="form-input form-textarea" id="adminBio" placeholder="أضف نبذة عن المدير..."></textarea>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> حفظ التغييرات</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- معلومات التواصل -->
+                    <div class="settings-section" id="contact">
+                        <h2 class="section-title"><i class="fas fa-address-book"></i> معلومات التواصل</h2>
+                        <p class="section-description">إدارة معلومات التواصل الخاصة بالمتجر</p>
+                        <form class="settings-form" id="contactForm">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">رقم الهاتف</label>
+                                    <input type="tel" class="form-input" id="contactPhoneNumber" placeholder="أدخل رقم الهاتف">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">البريد الإلكتروني</label>
+                                    <input type="email" class="form-input" id="contactEmail" placeholder="أدخل البريد الإلكتروني">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">العنوان</label>
+                                <input type="text" class="form-input" id="contactAddress" placeholder="أدخل العنوان">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">ساعات العمل</label>
+                                <input type="text" class="form-input" id="contactWorkingHours" placeholder="أدخل ساعات العمل">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">رابط الخريطة</label>
+                                    <input type="url" class="form-input" id="contactMapLink" placeholder="أدخل رابط الخريطة">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">رابط واتساب</label>
+                                    <input type="url" class="form-input" id="contactWhatsAppLink" placeholder="أدخل رابط واتساب">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">رابط إنستغرام</label>
+                                    <input type="url" class="form-input" id="contactInstagramLink" placeholder="أدخل رابط إنستغرام">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">رابط فيسبوك</label>
+                                    <input type="url" class="form-input" id="contactFacebookLink" placeholder="أدخل رابط فيسبوك">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">رابط يوتيوب</label>
+                                <input type="url" class="form-input" id="contactYahooLink" placeholder="أدخل رابط يوتيوب">
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> حفظ التغييرات</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // Load colors section by default
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchList('colors');
+        });
+
+        // Switch settings sections
+        document.querySelectorAll('.settings-nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelectorAll('.settings-nav-link').forEach(el => el.classList.remove('active'));
+                this.classList.add('active');
+                document.querySelectorAll('.settings-section').forEach(section => section.classList.remove('active'));
+                const sectionId = this.getAttribute('data-section');
+                document.getElementById(sectionId).classList.add('active');
+                if (['colors', 'sizes', 'categories'].includes(sectionId)) {
+                    fetchList(sectionId);
+                } else if (sectionId === 'store-settings') {
+                    fetchStoreSettings();
+                } else if (sectionId === 'admin-profile') {
+                    fetchAdminProfile();
+                } else if (sectionId === 'contact') {
+                    fetchContactInfo();
+                }
+            });
+        });
+
+        // File upload setup
+        function setupFileUpload(uploadAreaId, inputId, previewId, imageId, fileNameId, fileSizeId, removeId) {
+            const uploadArea = document.getElementById(uploadAreaId);
+            const input = document.getElementById(inputId);
+            const preview = document.getElementById(previewId);
+            const image = document.getElementById(imageId);
+            const fileName = document.getElementById(fileNameId);
+            const fileSize = document.getElementById(fileSizeId);
+            const removeButton = document.getElementById(removeId);
+
+            uploadArea.addEventListener('click', () => input.click());
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('dragover');
+            });
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                if (e.dataTransfer.files.length) {
+                    input.files = e.dataTransfer.files;
+                    handleFileUpload(input.files[0], preview, image, fileName, fileSize);
+                }
+            });
+            input.addEventListener('change', () => {
+                if (input.files.length) {
+                    handleFileUpload(input.files[0], preview, image, fileName, fileSize);
+                }
+            });
+            removeButton.addEventListener('click', () => {
+                input.value = '';
+                preview.style.display = 'none';
+            });
+        }
+
+        setupFileUpload('categoryImageUpload', 'categoryImageInput', 'categoryImagePreview', 'categoryImage', 'categoryFileName', 'categoryFileSize', 'removeCategoryImage');
+        setupFileUpload('storeLogoUpload', 'storeLogoInput', 'storeLogoPreview', 'storeLogoImage', 'storeLogoFileName', 'storeLogoFileSize', 'removeStoreLogo');
+        setupFileUpload('adminProfileUpload', 'adminProfileInput', 'adminProfilePreview', 'adminProfileImage', 'adminProfileFileName', 'adminProfileFileSize', 'removeAdminProfileImage');
+
+        function handleFileUpload(file, preview, image, fileName, fileSize) {
+            if (!file.type.match('image.*')) {
+                showToast('الرجاء تحميل صورة فقط', 'error');
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                image.src = e.target.result;
+                fileName.textContent = file.name;
+                fileSize.textContent = formatFileSize(file.size);
+                preview.style.display = 'flex';
+            };
+            reader.readAsDataWorksURL(file);
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast';
+            toast.classList.add(type, 'show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        async function fetchList(section) {
+            const endpoints = {
+                colors: '/api/colors/',
+                sizes: '/api/sizes/',
+                categories: '/api/categories/'
+            };
+
+            const correctedSection = section.endsWith('s') ? section.slice(0, -1) : section;
+            const listElement = document.getElementById(`${correctedSection}List`);
+            listElement.innerHTML = '';
+
+            try {
+                const response = await fetch(endpoints[section], {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.message || response.statusText);
+                }
+
+                const data = await response.json();
+                if (!Array.isArray(data)) {
+                    throw new Error(`Expected array for ${section}, received: ${typeof data}`);
+                }
+
+                data.forEach(item => {
+                    const tr = document.createElement('tr');
+                    if (section === 'categories') {
+                        tr.innerHTML = `
+                            <td>${item.name || 'غير متوفر'}</td>
+                            <td><img src="${item.image || 'https://via.placeholder.com/50'}" alt="${item.name || 'صورة'}" style="max-width: 50px;"></td>
+                            <td>
+                                <button class="btn btn-danger btn-sm" onclick="deleteItem('${section}', ${item.id})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        `;
+                    } else {
+                        tr.innerHTML = `
+                            <td>${item.name || 'غير متوفر'}</td>
+                            <td>
+                                <button class="btn btn-danger btn-sm" onclick="deleteItem('${section}', ${item.id})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        `;
+                    }
+                    listElement.appendChild(tr);
+                });
+            } catch (error) {
+                console.error(`Error fetching ${section}:`, error);
+                showToast(`حدث خطأ أثناء جلب ${section === 'colors' ? 'الألوان' : section === 'sizes' ? 'الأحجام' : 'الفئات'}: ${error.message}`, 'error');
+            }
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        async function addItem(section, data) {
+            const endpoints = {
+                colors: '/api/colors/',
+                sizes: '/api/sizes/',
+                categories: '/api/categories/'
+            };
+
+            try {
+                const response = await fetch(endpoints[section], {
+                    method: 'POST',
+                    headers: section === 'categories' ? { 'X-CSRFToken': getCookie('csrftoken') } : { 
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: section === 'categories' ? data : JSON.stringify(data)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.message || response.statusText);
+                }
+
+                const responseData = await response.json();
+                showToast('تمت الإضافة بنجاح');
+                fetchList(section);
+                if (section === 'categories') {
+                    document.getElementById('categoryImagePreview').style.display = 'none';
+                    document.getElementById('categoryForm').reset();
+                } else {
+                    document.getElementById(`${section.slice(0, -1)}Form`).reset();
+                }
+            } catch (error) {
+                console.error(`Error adding ${section}:`, error);
+                showToast(`فشل في الإضافة: ${error.message}`, 'error');
+            }
+        }
+
+        async function deleteItem(section, id) {
+            const endpoints = {
+                colors: '/api/colors/',
+                sizes: '/api/sizes/',
+                categories: '/api/categories/'
+            };
+
+            try {
+                const response = await fetch(`${endpoints[section]}${id}/`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    }
+                });
+
+                if (!response.ok && response.status !== 204) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.message || response.statusText);
+                }
+
+                showToast('تم الحذف بنجاح');
+                fetchList(section);
+            } catch (error) {
+                console.error(`Error deleting ${section}:`, error);
+                showToast(`فشل في الحذف: ${error.message}`, 'error');
+            }
+        }
+
+        async function fetchStoreSettings() {
+            try {
+                const response = await fetch('/api/store-settings/', {
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                if (!response.ok && response.status !== 404) {
+                    throw new Error(response.statusText);
+                }
+
+                const data = response.status === 404 ? {} : await response.json();
+                document.getElementById('storeName').value = data.store_name || '';
+                if (data.store_logo) {
+                    document.getElementById('storeLogoImage').src = data.store_logo;
+                    document.getElementById('storeLogoPreview').style.display = 'flex';
+                }
+            } catch (error) {
+                console.error('Error fetching store settings:', error);
+                showToast('حدث خطأ أثناء جلب إعدادات المتجر', 'error');
+            }
+        }
+
+        async function fetchAdminProfile() {
+            try {
+                const response = await fetch('/api/admin-profile/', {
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                if (!response.ok) {
+                    throw new Error(response.statusText);
+                }
+
+                const data = await response.json();
+                if (data.length > 0) {
+                    const profile = data[0];
+                    document.getElementById('adminName').value = profile.admin_name || '';
+                    document.getElementById('adminPhoneNumber').value = profile.phone_number || '';
+                    document.getElementById('adminAddress').value = profile.address || '';
+                    document.getElementById('adminPosition').value = profile.position || '';
+                    document.getElementById('adminBio').value = profile.bio || '';
+                    if (profile.profile_image) {
+                        document.getElementById('adminProfileImage').src = profile.profile_image;
+                        document.getElementById('adminProfilePreview').style.display = 'flex';
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching admin profile:', error);
+                showToast('حدث خطأ أثناء جلب ملف المدير', 'error');
+            }
+        }
+
+        async function fetchContactInfo() {
+            try {
+                const response = await fetch('/api/contact-info/', {
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                if (!response.ok && response.status !== 404) {
+                    throw new Error(response.statusText);
+                }
+
+                const data = response.status === 404 ? {} : await response.json();
+                document.getElementById('contactPhoneNumber').value = data.phone_number || '';
+                document.getElementById('contactEmail').value = data.email || '';
+                document.getElementById('contactAddress').value = data.address || '';
+                document.getElementById('contactWorkingHours').value = data.working_hours || '';
+                document.getElementById('contactMapLink').value = data.map_link || '';
+                document.getElementById('contactWhatsAppLink').value = data.whatsapp_link || '';
+                document.getElementById('contactInstagramLink').value = data.instagram_link || '';
+                document.getElementById('contactFacebookLink').value = data.facebook_link || '';
+                document.getElementById('contactYahooLink').value = data.youtube_link || '';
+            } catch (error) {
+                console.error('Error fetching contact info:', error);
+                showToast('حدث خطأ أثناء جلب معلومات التواصل', 'error');
+            }
+        }
+
+        document.querySelectorAll('.settings-form').forEach(form => {
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const formId = this.id;
+                try {
+                    if (formId === 'colorForm') {
+                        const colorName = document.getElementById('colorName').value;
+                        if (!colorName) {
+                            throw new Error('يرجى إدخال اسم اللون');
+                        }
+                        await addItem('colors', { name: colorName });
+                    } else if (formId === 'sizeForm') {
+                        const sizeName = document.getElementById('sizeName').value;
+                        if (!sizeName) {
+                            throw new Error('يرجى إدخال اسم الحجم');
+                        }
+                        await addItem('sizes', { name: sizeName });
+                    } else if (formId === 'categoryForm') {
+                        const categoryName = document.getElementById('categoryName').value;
+                        const categoryImage = document.getElementById('categoryImageInput').files[0];
+                        if (!categoryName || !categoryImage) {
+                            throw new Error('يرجى إدخال اسم الفئة وتحميل صورة');
+                        }
+                        const formData = new FormData();
+                        formData.append('name', categoryName);
+                        formData.append('image', categoryImage);
+                        await addItem('categories', formData);
+                    } else if (formId === 'storeSettingsForm') {
+                        const formData = new FormData();
+                        formData.append('store_name', document.getElementById('storeName').value);
+                        const storeLogo = document.getElementById('storeLogoInput').files[0];
+                        if (storeLogo) {
+                            formData.append('store_logo', storeLogo);
+                        }
+                        const response = await fetch('/api/store-settings/', {
+                            method: 'PATCH',
+                            headers: {
+                                'X-CSRFToken': getCookie('csrftoken')
+                            },
+                            body: formData
+                        });
+                        if (!response.ok) {
+                            const errorData = await response.json().catch(() => ({}));
+                            throw new Error(errorData.message || response.statusText);
+                        }
+                        showToast('تم حفظ إعدادات المتجر بنجاح');
+                    } else if (formId === 'adminProfileForm') {
+                        const formData = new FormData();
+                        formData.append('admin_name', document.getElementById('adminName').value);
+                        formData.append('phone_number', document.getElementById('adminPhoneNumber').value);
+                        formData.append('address', document.getElementById('adminAddress').value);
+                        formData.append('position', document.getElementById('adminPosition').value);
+                        formData.append('bio', document.getElementById('adminBio').value);
+                        const profileImage = document.getElementById('adminProfileInput').files[0];
+                        if (profileImage) {
+                            formData.append('profile_image', profileImage);
+                        }
+                        const response = await fetch('/api/admin-profile/', {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRFToken': getCookie('csrftoken')
+                            },
+                            body: formData
+                        });
+                        if (!response.ok) {
+                            const errorData = await response.json().catch(() => ({}));
+                            throw new Error(errorData.message || response.statusText);
+                        }
+                        showToast('تم حفظ ملف المدير بنجاح');
+                    } else if (formId === 'contactForm') {
+                        const data = {
+                            phone_number: document.getElementById('contactPhoneNumber').value,
+                            email: document.getElementById('contactEmail').value,
+                            address: document.getElementById('contactAddress').value,
+                            working_hours: document.getElementById('contactWorkingHours').value,
+                            map_link: document.getElementById('contactMapLink').value,
+                            whatsapp_link: document.getElementById('contactWhatsAppLink').value,
+                            instagram_link: document.getElementById('contactInstagramLink').value,
+                            facebook_link: document.getElementById('contactFacebookLink').value,
+                            youtube_link: document.getElementById('contactYahooLink').value
+                        };
+                        const response = await fetch('/api/contact-info/', {
+                            method: 'PATCH',
+                            headers: { 
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': getCookie('csrftoken')
+                            },
+                            body: JSON.stringify(data)
+                        });
+                        if (!response.ok) {
+                            const errorData = await response.json().catch(() => ({}));
+                            throw new Error(errorData.message || response.statusText);
+                        }
+                        showToast('تم حفظ معلومات التواصل بنجاح');
+                    }
+                } catch (error) {
+                    console.error(`Error processing ${formId}:`, error);
+                    showToast(`فشل في حفظ التغييرات: ${error.message}`, 'error');
+                }
+            });
+        });
+
+        function handleSidebar() {
+            if (window.innerWidth < 768) {
+                document.querySelector('.sidebar').classList.toggle('active');
+            }
+        }
+    </script>

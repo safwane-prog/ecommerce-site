@@ -1,0 +1,802 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}متجر صفوان - التسوق الإلكتروني{% endblock %}
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --primary-color: #1a1a1a;
+        --secondary-color: #0066ff;
+        --accent-color: #ff6b35;
+        --text-color: #2c2c2c;
+        --text-light: #666;
+        --bg-light: #f8f9fa;
+        --discount-color: #ff0000;
+        --star-color: #ffa502;
+        --border-color: #e0e0e0;
+        --shadow-light: 0 2px 10px rgba(0,0,0,0.1);
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        --border-radius: 12px;
+    }
+
+    /* Hero Section */
+.hero-section {
+        width: 100%;
+        height: 80vh;
+        min-height: 300px;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #f5f5f5;
+    }
+
+    .hero-slideshow {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .hero-slide {
+        width: 100%;
+        height: 100%;
+        position: relative;
+    }
+
+    .hero-slide img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    @media (max-width: 768px) {
+        .hero-section {
+            height: 5vh;
+            min-height: 180px;
+        }
+    }
+
+    /* Category Section */
+    .category-section {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 4rem 5%;
+        background: var(--bg-light);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .category-title {
+        text-align: center;
+        background: linear-gradient(135deg, var(--secondary-color), #0047b3);
+        color: white;
+        padding: 1.5rem;
+        border-radius: var(--border-radius);
+        margin-bottom: 3rem;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .category-title::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(
+            to bottom right,
+            transparent,
+            transparent,
+            transparent,
+            rgba(255,255,255,0.1),
+            transparent
+        );
+        transform: rotate(30deg);
+        animation: shine 3s infinite;
+    }
+
+    @keyframes shine {
+        0% { transform: rotate(30deg) translate(-30%, -30%); }
+        100% { transform: rotate(30deg) translate(30%, 30%); }
+    }
+
+    .category-title h1 {
+        font-size: clamp(1.8rem, 4vw, 2.5rem);
+        margin: 0;
+        position: relative;
+    }
+
+    .category-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 2rem;
+    }
+
+    .category-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        cursor: pointer;
+        transition: var(--transition);
+        position: relative;
+        z-index: 1;
+    }
+
+    .category-item:hover {
+        transform: translateY(-10px);
+    }
+
+    .category-img {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 3px solid var(--secondary-color);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: white;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        transition: var(--transition);
+    }
+
+    .category-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+        transition: var(--transition);
+    }
+
+    .category-item:hover .category-img {
+        transform: rotateY(180deg);
+        background: linear-gradient(45deg, #f3f3f3, white);
+    }
+
+    .category-item:hover .category-img img {
+        transform: scale(1.1);
+    }
+
+    .category-name {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--text-color);
+        margin-top: 1rem;
+        transition: var(--transition);
+    }
+
+    .category-item:hover .category-name {
+        color: var(--secondary-color);
+    }
+
+    /* Products Section */
+    .products-section {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 4rem 5%;
+        background: white;
+        position: relative;
+    }
+
+    .section-title {
+        text-align: center;
+        background: linear-gradient(135deg, var(--secondary-color), #0047b3);
+        color: white;
+        padding: 1.5rem;
+        border-radius: var(--border-radius);
+        margin-bottom: 3rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .section-title h2 {
+        font-size: clamp(2rem, 4vw, 2.5rem);
+        margin: 0;
+    }
+
+    .section-title p {
+        font-size: clamp(1rem, 2.5vw, 1.2rem);
+        margin: 0.5rem 0 0;
+        opacity: 0.9;
+    }
+
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+    }
+
+    .product-item {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        padding: 1rem;
+        text-align: center;
+        transition: var(--transition);
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        overflow: hidden;
+    }
+
+    .product-item::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(90deg, var(--secondary-color), var(--accent-color));
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.5s ease;
+    }
+
+    .product-item:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    }
+
+    .product-item:hover::before {
+        transform: scaleX(1);
+    }
+
+    .product-img {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        overflow: hidden;
+        border-radius: 10px;
+    }
+
+    .product-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: var(--transition);
+        cursor: pointer;
+    }
+
+    .product-item:hover .product-img img {
+        transform: scale(1.1);
+    }
+
+    .discount {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: var(--discount-color);
+        color: white;
+        padding: 0.3rem 0.8rem;
+        border-radius: 50px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        z-index: 2;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .product-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--text-color);
+        transition: var(--transition);
+    }
+
+    .product-item:hover .product-title {
+        color: var(--secondary-color);
+    }
+
+    .product-rating {
+        display: flex;
+        justify-content: center;
+        gap: 0.3rem;
+    }
+
+    .product-rating i {
+        color: var(--star-color);
+        font-size: 1rem;
+    }
+
+    .price-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .price {
+        font-size: 1.2rem;
+        font-weight: 800;
+        color: var(--secondary-color);
+    }
+
+    .old-price {
+        font-size: 0.9rem;
+        color: var(--discount-color);
+        text-decoration: line-through;
+    }
+
+    .buy-button {
+        width: 100%;
+        padding: 0.8rem;
+        background: linear-gradient(90deg, var(--secondary-color), #0047b3);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: var(--transition);
+        box-shadow: 0 4px 10px rgba(0,102,255,0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .buy-button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: 0.5s;
+    }
+
+    .buy-button:hover {
+        background: linear-gradient(90deg, #0047b3, var(--secondary-color));
+        transform: translateY(-3px);
+        box-shadow: 0 6px 15px rgba(0,102,255,0.4);
+    }
+
+    .buy-button:hover::before {
+        left: 100%;
+    }
+
+    .view-all {
+        display: flex;
+        justify-content: center;
+        margin: 3rem 0 1rem;
+    }
+
+    .view-all a {
+        text-decoration: none;
+    }
+
+    .view-all button {
+        background: linear-gradient(90deg, var(--secondary-color), #0047b3);
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: var(--transition);
+        box-shadow: 0 4px 15px rgba(0,102,255,0.3);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .view-all button:hover {
+        background: linear-gradient(90deg, #0047b3, var(--secondary-color));
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0,102,255,0.4);
+    }
+
+    .view-all button i {
+        transition: var(--transition);
+    }
+
+    .view-all button:hover i {
+        transform: translateX(5px);
+    }
+
+    /* Top Products (Horizontal Carousel) */
+    .top-products {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 4rem 5%;
+        background: var(--bg-light);
+        position: relative;
+    }
+
+    .carousel-container {
+        position: relative;
+    }
+
+    .product-top {
+        display: flex;
+        overflow-x: auto;
+        scroll-behavior: smooth;
+        gap: 1rem;
+        padding-bottom: 1rem;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+
+    .product-top::-webkit-scrollbar {
+        display: none;
+    }
+
+    .product-top .product-item {
+        flex: 0 0 250px;
+        min-width: 250px;
+        margin-right: 1rem;
+    }
+
+    .carousel-nav {
+        position: absolute;
+        top: 50%;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        transform: translateY(-50%);
+        z-index: 2;
+        pointer-events: none;
+    }
+
+    .carousel-nav button {
+        background: var(--secondary-color);
+        color: white;
+        border: none;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: var(--transition);
+        pointer-events: auto;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    .carousel-nav button:hover {
+        background: #0047b3;
+        transform: scale(1.1);
+        box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+    }
+
+    .carousel-nav button:disabled {
+        background: #666;
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .carousel-nav button i {
+        font-size: 1.5rem;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+        
+        .category-grid {
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+        }
+    }
+
+    @media (max-width: 768px) {
+        .category-grid {
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .category-img {
+            width: 100px;
+            height: 100px;
+        }
+        
+        .product-grid {
+            grid-template-columns: repeat(2, 1fr); /* عرض منتجين في الصف على الهاتف */
+            gap: 1.5rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        
+        .category-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+        
+        .category-img {
+            width: 80px;
+            height: 80px;
+        }
+        
+        .category-name {
+            font-size: 0.9rem;
+        }
+        
+        .product-grid {
+            grid-template-columns: repeat(2, 1fr); /* عرض منتجين في الصف على الهاتف */
+            gap: 1rem;
+        }
+        
+        .product-top .product-item {
+            flex: 0 0 100%;
+            min-width: 100%;
+        }
+        
+        .view-all button {
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+        }
+
+        .carousel-nav button {
+            width: 40px;
+            height: 40px;
+        }
+
+        .carousel-nav button i {
+            font-size: 1.2rem;
+        }
+    }
+
+    /* Accessibility */
+    @media (prefers-reduced-motion: reduce) {
+        * {
+            animation: none !important;
+            transition: none !important;
+        }
+        
+    }
+</style>
+
+<section class="hero-section">
+    <div class="hero-slideshow">
+        <div class="hero-slide active">
+            <img src="\static\img\hero_1.jpg" alt="عرض حصري على منتجاتنا">
+        </div>
+    </div>
+</section>
+
+
+<section id="category-section" class="category-section">
+    <div class="category-title">
+        <h1>مجموعة من تصنيفاتنا</h1>
+    </div>
+    <div class="category-grid">
+        <!-- Categories will be populated by JavaScript -->
+    </div>
+</section>
+
+<section class="products-section">
+    <div class="section-title">
+        <h2>المنتجات من اختيارك</h2>
+        <p>مع التوصيل المجاني</p>
+    </div>
+    <div id="product-grid" class="product-grid">
+        <!-- Products will be populated by JavaScript -->
+    </div>
+    <div class="view-all">
+        <a href="{% url 'shop' %}">
+            <button>استعراض المزيد <i class="bi bi-arrow-left"></i></button>
+        </a>
+    </div>
+</section>
+
+<section class="top-products">
+    <div class="section-title">
+        <h2>الأكثر مبيعًا</h2>
+        <p>المنتجات الأكثر طلبًا من عملائنا</p>
+    </div>
+    <div class="carousel-container">
+        <div id="product-top" class="product-top">
+            <!-- Top products will be populated by JavaScript -->
+        </div>
+    </div>
+    <div class="view-all">
+        <a href="{% url 'shop' %}">
+            <button>استعراض المزيد <i class="bi bi-arrow-left"></i></button>
+        </a>
+    </div>
+</section>
+
+<script>
+    function viewDetail(productId) {
+        window.location.href = `/product/${productId}`;
+    }
+
+    function viewCategory(categoryId) {
+        window.location.href = `/products/?category_id=${categoryId}`;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Initialize cart from localStorage
+        let cart = JSON.parse(localStorage.getItem('safwanCart')) || [];
+
+        // Carousel for Top Products
+        const carousel = document.querySelector('.product-top');
+        const prevBtn = document.querySelector('.prev-btn');
+        const nextBtn = document.querySelector('.next-btn');
+        let scrollAmount = 0;
+        const itemWidth = 250 + 16;
+
+        function updateCarouselButtons() {
+            if (carousel) {
+                prevBtn.disabled = scrollAmount <= 0;
+                nextBtn.disabled = scrollAmount >= carousel.scrollWidth - carousel.clientWidth;
+            }
+        }
+
+        if (nextBtn) {
+            nextBtn.addEventListener('click', () => {
+                scrollAmount += itemWidth;
+                carousel.scrollTo({ left: scrollAmount, behavior: 'smooth' });
+                updateCarouselButtons();
+            });
+        }
+
+        if (prevBtn) {
+            prevBtn.addEventListener('click', () => {
+                scrollAmount -= itemWidth;
+                carousel.scrollTo({ left: scrollAmount, behavior: 'smooth' });
+                updateCarouselButtons();
+            });
+        }
+
+        if (carousel) {
+            carousel.addEventListener('scroll', () => {
+                scrollAmount = carousel.scrollLeft;
+                updateCarouselButtons();
+            });
+        }
+
+        // Fetch products and categories
+        Promise.all([
+            fetchProducts(),
+            fetchCategories(),
+            fetchTopProducts()
+        ]).then(([products, categories, topProducts]) => {
+            renderProducts(products);
+            renderCategories(categories);
+            renderTopProducts(topProducts);
+            updateCarouselButtons();
+        }).catch(error => {
+            console.error('Error loading data:', error);
+            showErrorToast('حدث خطأ في تحميل البيانات. يرجى المحاولة لاحقًا.');
+        });
+
+        async function fetchProducts() {
+            try {
+                const response = await fetch('/api/products/');
+                if (!response.ok) throw new Error('Network response was not ok');
+                return await response.json();
+            } catch (error) {
+                console.error('Error fetching products:', error);
+                throw error;
+            }
+        }
+
+        async function fetchCategories() {
+            try {
+                const response = await fetch('/api/categories/');
+                if (!response.ok) throw new Error('Network response was not ok');
+                return await response.json();
+            } catch (error) {
+                console.error('Error fetching categories:', error);
+                throw error;
+            }
+        }
+
+        async function fetchTopProducts() {
+            try {
+                const response = await fetch('/api/best-selling/');
+                if (!response.ok) throw new Error('Network response was not ok');
+                return await response.json();
+            } catch (error) {
+                console.error('Error fetching top products:', error);
+                return [];
+            }
+        }
+
+        function renderProducts(products) {
+            const container = document.getElementById('product-grid');
+            if (!container) return;
+            
+            container.innerHTML = products.slice(0, 8).map(product => `
+                <div class="product-item" aria-label="${product.name}">
+                    <div class="product-img">
+                        <img onclick="viewDetail(${product.id})" src="${product.image_1}" alt="${product.name}" loading="lazy">
+                        ${product.discount ? `<span class="discount">${product.discount}%</span>` : ''}
+                    </div>
+                    <div class="product-title">${product.name}</div>
+                    <div class="product-rating" aria-label="التقييم ${product.rating || 5} من 5">
+                        ${'<i class="bi bi-star-fill"></i>'.repeat(Math.floor(product.rating || 5))}
+                    </div>
+                    <div class="price-container">
+                        <span class="price">${product.price} د.م</span>
+                        ${product.old_price ? `<span class="old-price">${product.old_price} د.م</span>` : ''}
+                    </div>
+                    <button class="buy-button" onclick="viewDetail(${product.id})" aria-label="عرض تفاصيل ${product.name}">
+                        شراء الآن
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function renderTopProducts(products) {
+            const container = document.getElementById('product-top');
+            if (!container || !products.length) return;
+            
+            container.innerHTML = products.slice(0, 4).map(product => `
+                <div class="product-item" aria-label="${product.name}">
+                    <div class="product-img">
+                        <img onclick="viewDetail(${product.id})" src="${product.image_1}" alt="${product.name}" loading="lazy">
+                        ${product.discount ? `<span class="discount">${product.discount}%</span>` : ''}
+                    </div>
+                    <div class="product-title">${product.name}</div>
+                    <div class="product-rating" aria-label="التقييم ${product.rating || 5} من 5">
+                        ${'<i class="bi bi-star-fill"></i>'.repeat(Math.floor(product.rating || 5))}
+                    </div>
+                    <div class="price-container">
+                        <span class="price">${product.price} د.م</span>
+                        ${product.old_price ? `<span class="old-price">${product.old_price} د.م</span>` : ''}
+                    </div>
+                    <button class="buy-button" onclick="viewDetail(${product.id})" aria-label="عرض تفاصيل ${product.name}">
+                        شراء الآن
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function renderCategories(categories) {
+            const container = document.querySelector('.category-grid');
+            if (!container) return;
+            
+            container.innerHTML = categories.map(category => `
+                <div class="category-item" onclick="viewCategory(${category.id})" aria-label="تصنيف ${category.name}">
+                    <div class="category-img">
+                        <img src="${category.image || '/static/img/default-category.png'}" alt="${category.name}" loading="lazy">
+                    </div>
+                    <div class="category-name">${category.name}</div>
+                </div>
+            `).join('');
+        }
+
+        function showErrorToast(message) {
+            const toast = document.createElement('div');
+            toast.style.position = 'fixed';
+            toast.style.bottom = '20px';
+            toast.style.right = '20px';
+            toast.style.background = '#ff4444';
+            toast.style.color = 'white';
+            toast.style.padding = '1rem';
+            toast.style.borderRadius = 'var(--border-radius)';
+            toast.style.zIndex = '10000';
+            toast.style.boxShadow = '0 3px 10px rgba(0,0,0,0.2)';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.style.transition = 'opacity 0.5s';
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 500);
+            }, 3000);
+        }
+
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').catch(err => {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم المتجر الإلكتروني</title>
+    <link rel="stylesheet" href="\static\dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- الشريط الجانبي -->
+        <div class="sidebar">
+            <div class="logo">
+                <i class="fas fa-store"></i>
+                <span>المتجر الإلكتروني</span>
+            </div>
+<ul class="menu">
+    <li class="active">
+        <a href="{% url 'dashboard' %}">
+            <i class="fas fa-tachometer-alt"></i>
+            <span>الرئيسية</span>
+        </a>
+    </li>
+    <li>
+        <a href="{% url 'views_product' %}">
+            <i class="fas fa-box-open"></i>
+            <span>المنتجات</span>
+        </a>
+    </li>
+    <li>
+        <a href="{% url 'orders' %}">
+            <i class="fas fa-shopping-cart"></i>
+            <span>الطلبات</span>
+        </a>
+    </li>
+    <li>
+        <a href="{% url 'massage' %}">
+            <i class="fas fa-envelope"></i>
+            <span>الرسائل</span>
+        </a>
+    </li>
+    <li>
+        <a href="{% url 'settings' %}">
+            <i class="fas fa-cog"></i>
+            <span>الإعدادات</span>
+        </a>
+    </li>
+</ul>
+
+        </div>
+
+        <!-- المحتوى الرئيسي -->
+        <div class="main-content">
+            <!-- شريط العنوان -->
+            <div class="header">
+                <div class="search">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="بحث...">
+                </div>
+                <div class="user-area">
+                    <div class="notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge">3</span>
+                    </div>
+                    <div class="user">
+                        <img src="https://via.placeholder.com/40" alt="صورة المستخدم">
+                        <span>مدير المتجر</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- بطاقات الإحصائيات -->
+            <div class="stats-cards">
+                <div class="card">
+                    <div class="card-icon bg-blue">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <div class="card-info">
+                        <h3>الطلبات</h3>
+                        <p id="total-orders">0</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-icon bg-green">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="card-info">
+                        <h3>الإيرادات</h3>
+                        <p id="total-revenue">0 ر.س</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-icon bg-orange">
+                        <i class="fas fa-box-open"></i>
+                    </div>
+                    <div class="card-info">
+                        <h3>المنتجات</h3>
+                        <p id="total-products">0</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-icon bg-red">
+                        <i class="fas fa-tags"></i>
+                    </div>
+                    <div class="card-info">
+                        <h3>الفئات</h3>
+                        <p id="total-categories">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- الرسوم البيانية -->
+            <div class="charts-row">
+        <div class="chart-container">
+            <div class="chart-header">
+                <h2>أداء المبيعات</h2>
+                <div class="time-filters">
+                    <button class="time-filter active" data-period="7days">7 أيام</button>
+                    <button class="time-filter" data-period="30days">30 يومًا</button>
+                </div>
+            </div>
+            <canvas id="salesPerformanceChart"></canvas>
+            <div class="chart-summary">
+                <div class="summary-item">
+                    <span class="label">إجمالي المبيعات</span>
+                    <span class="value" id="total-sales-value">0 ر.س</span>
+                </div>
+                <div class="summary-item">
+                    <span class="label">عدد الطلبات</span>
+                    <span class="value" id="total-orders-value">0</span>
+                </div>
+                <div class="summary-item">
+                    <span class="label">متوسط الطلب</span>
+                    <span class="value" id="avg-order-value">0 ر.س</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="chart-container">
+            <div class="chart-header">
+                <h2>توزيع الفئات</h2>
+                <div class="chart-legend" id="category-legend"></div>
+            </div>
+            <canvas id="categoryDistributionChart"></canvas>
+            <div class="chart-footer">
+                <i class="fas fa-info-circle"></i>
+                <span>حسب عدد المنتجات المباعة في كل فئة</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- صف الرسوم البيانية الثاني -->
+    <div class="charts-row">
+        <div class="chart-container">
+            <div class="chart-header">
+                <h2>حالات الطلبات</h2>
+            </div>
+            <canvas id="orderStatusChart"></canvas>
+            <div class="status-details">
+                <div class="status-item">
+                    <span class="status-dot completed"></span>
+                    <span class="status-label">مكتملة</span>
+                    <span class="status-value" id="completed-orders">0</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-dot pending"></span>
+                    <span class="status-label">قيد المعالجة</span>
+                    <span class="status-value" id="pending-orders">0</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-dot canceled"></span>
+                    <span class="status-label">ملغاة</span>
+                    <span class="status-value" id="canceled-orders">0</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="chart-container">
+            <div class="chart-header">
+                <h2>توزيع الألوان</h2>
+                <div class="color-filters">
+                    <select id="color-distribution-filter">
+                        <option value="orders">حسب الطلبات</option>
+                        <option value="revenue">حسب الإيرادات</option>
+                    </select>
+                </div>
+            </div>
+            <canvas id="colorDistributionChart"></canvas>
+            <div class="chart-footer">
+                <i class="fas fa-sync-alt"></i>
+                <span>انقر على عنصر في الرسم لتحديده</span>
+            </div>
+        </div>
+    </div>
+
+            <!-- أحدث الطلبات -->
+            <div class="recent-orders">
+                <h2>أحدث الطلبات</h2>
+                <table id="orders-table">
+                    <thead>
+                        <tr>
+                            <th>رقم الطلب</th>
+                            <th>العميل</th>
+                            <th>التاريخ</th>
+                            <th>المبلغ</th>
+                            <th>الحالة</th>
+                            <th>إجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- سيتم ملؤه بالبيانات من الـ API -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // تهيئة الرسوم البيانية
+function initCharts(data) {
+    // 1. رسم أداء المبيعات
+    const salesCtx = document.getElementById('salesPerformanceChart').getContext('2d');
+    const salesChart = new Chart(salesCtx, {
+        type: 'line',
+        data: {
+            labels: generateLast7DaysLabels(),
+            datasets: [
+                {
+                    label: 'المبيعات',
+                    data: generateSalesData(data.time_based_stats),
+                    borderColor: '#4361ee',
+                    backgroundColor: 'rgba(67, 97, 238, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    fill: true,
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: '#4361ee',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                },
+                {
+                    label: 'الطلبات',
+                    data: generateOrdersData(data.time_based_stats),
+                    borderColor: '#4cc9f0',
+                    backgroundColor: 'rgba(76, 201, 240, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    borderDash: [5, 5],
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: '#4cc9f0',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }
+            ]
+        },
+        options: getChartOptions('ريال')
+    });
+
+    // 2. رسم توزيع الفئات
+    const categoryCtx = document.getElementById('categoryDistributionChart').getContext('2d');
+    const categoryChart = new Chart(categoryCtx, {
+        type: 'doughnut',
+        data: {
+            labels: data.category_stats.map(cat => cat.category_name),
+            datasets: [{
+                data: data.category_stats.map(cat => cat.order_count),
+                backgroundColor: [
+                    '#4361ee',
+                    '#3f37c9',
+                    '#4895ef',
+                    '#4cc9f0',
+                    '#43aa8b',
+                    '#f72585'
+                ],
+                borderWidth: 0,
+                hoverOffset: 10
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.label || '';
+                            const value = context.raw || 0;
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = Math.round((value / total) * 100);
+                            return `${label}: ${value} طلب (${percentage}%)`;
+                        }
+                    }
+                }
+            },
+            cutout: '70%',
+            animation: {
+                animateScale: true,
+                animateRotate: true
+            }
+        }
+    });
+
+    // 3. رسم حالات الطلبات
+    const statusCtx = document.getElementById('orderStatusChart').getContext('2d');
+    const statusChart = new Chart(statusCtx, {
+        type: 'pie',
+        data: {
+            labels: ['مكتملة', 'قيد المعالجة', 'ملغاة'],
+            datasets: [{
+                data: [
+                    data.order_status_stats.paid_orders,
+                    data.order_status_stats.unpaid_orders,
+                    0 // لا توجد بيانات للطلبات الملغاة في الـ API
+                ],
+                backgroundColor: [
+                    '#28a745',
+                    '#ffc107',
+                    '#dc3545'
+                ],
+                borderWidth: 0,
+                hoverOffset: 10
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.label || '';
+                            const value = context.raw || 0;
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = Math.round((value / total) * 100);
+                            return `${label}: ${value} طلب (${percentage}%)`;
+                        }
+                    }
+                }
+            },
+            animation: {
+                animateScale: true,
+                animateRotate: true
+            }
+        }
+    });
+
+    // 4. رسم توزيع الألوان
+    const colorCtx = document.getElementById('colorDistributionChart').getContext('2d');
+    const colorChart = new Chart(colorCtx, {
+        type: 'bar',
+        data: {
+            labels: data.color_distribution.map(color => color.color_name),
+            datasets: [{
+                label: 'عدد الطلبات',
+                data: data.color_distribution.map(color => color.order_count),
+                backgroundColor: [
+                    '#f72585',
+                    '#4361ee',
+                    '#4cc9f0',
+                    '#43aa8b',
+                    '#ffc107'
+                ],
+                borderWidth: 0,
+                borderRadius: 6
+            }]
+        },
+        options: getChartOptions('طلب')
+    });
+
+    // تحديث عناصر واجهة المستخدم
+    updateChartUI(data);
+}
+
+// وظائف مساعدة للرسوم البيانية
+function getChartOptions(currency = '') {
+    return {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'top',
+                align: 'start',
+                rtl: true,
+                labels: {
+                    usePointStyle: true,
+                    pointStyle: 'circle',
+                    padding: 20,
+                    font: {
+                        family: 'Tajawal, sans-serif'
+                    }
+                }
+            },
+            tooltip: {
+                rtl: true,
+                callbacks: {
+                    label: function(context) {
+                        let label = context.dataset.label || '';
+                        if (label) {
+                            label += ': ';
+                        }
+                        if (context.parsed.y !== null) {
+                            label += currency ? context.parsed.y + ' ' + currency : context.parsed.y;
+                        }
+                        return label;
+                    }
+                }
+            }
+        },
+        scales: {
+            x: {
+                grid: {
+                    display: false
+                }
+            },
+            y: {
+                beginAtZero: true,
+                grid: {
+                    color: '#f0f0f0'
+                },
+                ticks: {
+                    callback: function(value) {
+                        return currency ? value + ' ' + currency : value;
+                    }
+                }
+            }
+        },
+        interaction: {
+            intersect: false,
+            mode: 'index'
+        }
+    };
+}
+
+function generateLast7DaysLabels() {
+    const labels = [];
+    for (let i = 6; i >= 0; i--) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        labels.push(date.toLocaleDateString('ar-EG', { weekday: 'short' }));
+    }
+    return labels;
+}
+
+function generateSalesData(timeStats) {
+    // في الواقع الفعلي، يجب استخدام بيانات تاريخية مفصلة
+    // هنا نستخدم بيانات عشوائية للتوضيح
+    return Array.from({length: 7}, () => Math.floor(Math.random() * 1000) + 500);
+}
+
+function generateOrdersData(timeStats) {
+    // في الواقع الفعلي، يجب استخدام بيانات تاريخية مفصلة
+    // هنا نستخدم بيانات عشوائية للتوضيح
+    return Array.from({length: 7}, () => Math.floor(Math.random() * 20) + 5);
+}
+
+function updateChartUI(data) {
+    // تحديث الملخصات
+    document.getElementById('total-sales-value').textContent = data.general_stats.total_revenue + ' ر.س';
+    document.getElementById('total-orders-value').textContent = data.general_stats.total_orders;
+    document.getElementById('avg-order-value').textContent = data.general_stats.avg_order_value.toFixed(2) + ' ر.س';
+    
+    // تحديث حالات الطلبات
+    document.getElementById('completed-orders').textContent = data.order_status_stats.paid_orders;
+    document.getElementById('pending-orders').textContent = data.order_status_stats.unpaid_orders;
+    document.getElementById('canceled-orders').textContent = 0;
+    
+    // إنشاء وسيلة إيضاح لتوزيع الفئات
+    const legendContainer = document.getElementById('category-legend');
+    legendContainer.innerHTML = '';
+    
+    data.category_stats.forEach((cat, index) => {
+        if (cat.order_count > 0) {
+            const colors = ['#4361ee', '#3f37c9', '#4895ef', '#4cc9f0', '#43aa8b', '#f72585'];
+            const legendItem = document.createElement('div');
+            legendItem.className = 'legend-item';
+            legendItem.innerHTML = `
+                <span>${cat.category_name}</span>
+                <span class="legend-color" style="background: ${colors[index % colors.length]}"></span>
+            `;
+            legendContainer.appendChild(legendItem);
+        }
+    });
+}
+
+// عند تحميل الصفحة
+document.addEventListener('DOMContentLoaded', () => {
+    fetch('/api/dashboard-full-stats/')
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                initCharts(data.data);
+            }
+        });
+});
+        // جلب البيانات من API
+        async function fetchDashboardData() {
+            try {
+                const response = await fetch('/api/dashboard-full-stats/');
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    updateStatsCards(data.data);
+                    createCharts(data.data);
+                }
+            } catch (error) {
+                console.error('Error fetching dashboard data:', error);
+            }
+        }
+
+        // جلب بيانات الطلبات
+        async function fetchOrdersData() {
+            try {
+                const response = await fetch('/api/admin-order/');
+                const orders = await response.json();
+                updateOrdersTable(orders);
+            } catch (error) {
+                console.error('Error fetching orders data:', error);
+            }
+        }
+
+        // تحديث بطاقات الإحصائيات
+        function updateStatsCards(data) {
+            document.getElementById('total-orders').textContent = data.general_stats.total_orders;
+            document.getElementById('total-revenue').textContent = data.general_stats.total_revenue + ' ر.س';
+            document.getElementById('total-products').textContent = data.general_stats.total_products;
+            document.getElementById('total-categories').textContent = data.general_stats.total_categories;
+        }
+
+        // إنشاء الرسوم البيانية
+        function createCharts(data) {
+            // رسم بياني للإيرادات والطلبات
+            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+            new Chart(revenueCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['آخر 7 أيام', 'آخر 30 يوم'],
+                    datasets: [
+                        {
+                            label: 'الطلبات',
+                            data: [
+                                data.time_based_stats.last_7_days.new_orders,
+                                data.time_based_stats.last_30_days.new_orders
+                            ],
+                            backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'الإيرادات',
+                            data: [
+                                data.time_based_stats.last_7_days.revenue,
+                                data.time_based_stats.last_30_days.revenue
+                            ],
+                            backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // رسم بياني لتوزيع الفئات
+            const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+            new Chart(categoryCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: data.category_stats.map(cat => cat.category_name),
+                    datasets: [{
+                        data: data.category_stats.map(cat => cat.revenue),
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.7)',
+                            'rgba(54, 162, 235, 0.7)',
+                            'rgba(255, 206, 86, 0.7)',
+                            'rgba(75, 192, 192, 0.7)',
+                            'rgba(153, 102, 255, 0.7)',
+                            'rgba(255, 159, 64, 0.7)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true
+                }
+            });
+
+            // رسم بياني لحالة الطلبات
+            const orderStatusCtx = document.getElementById('orderStatusChart').getContext('2d');
+            new Chart(orderStatusCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['مدفوعة', 'غير مدفوعة'],
+                    datasets: [{
+                        data: [
+                            data.order_status_stats.paid_orders,
+                            data.order_status_stats.unpaid_orders
+                        ],
+                        backgroundColor: [
+                            'rgba(75, 192, 192, 0.7)',
+                            'rgba(255, 99, 132, 0.7)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true
+                }
+            });
+
+            // رسم بياني لتوزيع الألوان
+            const colorDistributionCtx = document.getElementById('colorDistributionChart').getContext('2d');
+            new Chart(colorDistributionCtx, {
+                type: 'polarArea',
+                data: {
+                    labels: data.color_distribution.map(color => color.color_name),
+                    datasets: [{
+                        data: data.color_distribution.map(color => color.order_count),
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.7)',
+                            'rgba(54, 162, 235, 0.7)',
+                            'rgba(255, 206, 86, 0.7)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true
+                }
+            });
+        }
+
+        // تحديث جدول الطلبات
+        function updateOrdersTable(orders) {
+            const tbody = document.querySelector('#orders-table tbody');
+            tbody.innerHTML = '';
+            
+            orders.forEach(order => {
+                const tr = document.createElement('tr');
+                
+                tr.innerHTML = `
+                    <td>#${order.id}</td>
+                    <td>${order.full_name}</td>
+                    <td>${new Date(order.created_at).toLocaleDateString()}</td>
+                    <td>${(order.product_details.price * order.quantity).toFixed(2)} ر.س</td>
+                    <td><span class="status ${order.is_paid ? 'completed' : 'pending'}">${order.is_paid ? 'مكتمل' : 'قيد المعالجة'}</span></td>
+                    <td><button class="action-btn">عرض</button></td>
+                `;
+                
+                tbody.appendChild(tr);
+            });
+        }
+
+        // تحميل البيانات عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchDashboardData();
+            fetchOrdersData();
+        });
+    </script>
+</body>
+</html>

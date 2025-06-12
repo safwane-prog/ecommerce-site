@@ -1,0 +1,996 @@
+{% extends 'base.html' %}
+
+{% block title %}المنتجات{% endblock %}
+
+{% block content %}
+<section class="shop-section">
+    <div class="shop-title">
+        <h1>منتجاتنا</h1>
+        <p>استكشف مجموعتنا المتنوعة من المنتجات عالية الجودة</p>
+    </div>
+
+    <!-- Search and Filter Section -->
+    <div class="filter-section">
+        <div class="search-container">
+            <div class="search-box">
+                <i class="bi bi-search"></i>
+                <input type="text" id="searchInput" placeholder="ابحث عن المنتجات..." />
+            </div>
+        </div>
+
+        <div style="display: none;" class="filters-container">
+            <div class="filter-toggle" id="filterToggle">
+                <i class="bi bi-funnel"></i>
+                <span>الفلاتر</span>
+                <i class="bi bi-chevron-down"></i>
+            </div>
+
+            <div class="filters-content" id="filtersContent">
+                <div class="filter-group">
+                    <h4>السعر</h4>
+                    <div class="price-range">
+                        <input type="number" id="minPrice" placeholder="الحد الأدنى" />
+                        <span>-</span>
+                        <input type="number" id="maxPrice" placeholder="الحد الأقصى" />
+                        <span>MAD</span>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <h4>الألوان</h4>
+                    <div class="color-filters" id="colorFilters">
+                        <!-- Colors will be loaded dynamically -->
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <h4>الأحجام</h4>
+                    <div class="size-filters" id="sizeFilters">
+                        <!-- Sizes will be loaded dynamically -->
+                    </div>
+                </div>
+
+                <div class="filter-actions">
+                    <button id="applyFilters" class="apply-btn">تطبيق الفلاتر</button>
+                    <button id="clearFilters" class="clear-btn">مسح الفلاتر</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Products Container -->
+    <div class="products-header">
+        <div class="results-count" id="resultsCount">
+            <span>عرض <strong id="currentResults">0</strong> من <strong id="totalResults">0</strong> منتج</span>
+        </div>
+        <div class="sort-options">
+            <select id="sortSelect">
+                <option value="name">ترتيب حسب الاسم</option>
+                <option value="price_asc">السعر: من الأقل إلى الأعلى</option>
+                <option value="price_desc">السعر: من الأعلى إلى الأقل</option>
+                <option value="newest">الأحدث</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="shop-container" id="shopContainer">
+        <!-- Products will be dynamically inserted here -->
+    </div>
+
+    <!-- Loading and No Results -->
+    <div class="loading" id="loading" style="display: none;">
+        <div class="spinner"></div>
+        <p>جاري التحميل...</p>
+    </div>
+
+    <div class="no-products" id="noProducts" style="display: none;">
+        <i class="bi bi-box-seam"></i>
+        <p>لا توجد منتجات متاحة حاليًا</p>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination-container" id="paginationContainer">
+        <!-- Pagination will be generated dynamically -->
+    </div>
+</section>
+
+<style>
+/* Shop Section */
+.shop-section {
+    padding: 40px 5%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.shop-title {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.shop-title h1 {
+    color: #004cff;
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.shop-title p {
+    color: var(--text-light);
+    font-size: 1.1rem;
+}
+
+/* Filter Section */
+.filter-section {
+    background: var(--bg-light);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow-light);
+}
+
+.search-container {
+    margin-bottom: 1rem;
+}
+
+.search-box {
+    position: relative;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.search-box i {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-light);
+    font-size: 1.1rem;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 12px 45px 12px 15px;
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    transition: var(--transition);
+    background: white;
+}
+
+.search-box input:focus {
+    outline: none;
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1);
+}
+
+.filters-container {
+    border-top: 1px solid var(--border-color);
+    padding-top: 1rem;
+}
+
+.filter-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    padding: 0.75rem 1rem;
+    background: white;
+    border-radius: var(--border-radius);
+    transition: var(--transition);
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.filter-toggle:hover {
+    background: var(--secondary-color);
+    color: white;
+}
+
+.filter-toggle.active i.bi-chevron-down {
+    transform: rotate(180deg);
+}
+
+.filters-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    background: white;
+    border-radius: var(--border-radius);
+    margin-top: 1rem;
+}
+
+.filters-content.active {
+    max-height: 500px;
+    padding: 1.5rem;
+    border: 1px solid var(--border-color);
+}
+
+.filter-group {
+    margin-bottom: 1.5rem;
+}
+
+.filter-group h4 {
+    color: var(--primary-color);
+    margin-bottom: 0.75rem;
+    font-size: 1.1rem;
+}
+
+.price-range {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.price-range input {
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    width: 120px;
+    font-size: 0.9rem;
+}
+
+.color-filters, .size-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.color-option {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    border: 2px solid var(--border-color);
+    cursor: pointer;
+    transition: var(--transition);
+    position: relative;
+}
+
+.color-option.selected {
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 2px rgba(0, 102, 255, 0.3);
+}
+
+.color-option::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-weight: bold;
+    opacity: 0;
+    transition: var(--transition);
+}
+
+.color-option.selected::after {
+    opacity: 1;
+}
+
+.size-option {
+    padding: 8px 16px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: var(--transition);
+    background: white;
+    font-size: 0.9rem;
+}
+
+.size-option.selected {
+    background: var(--secondary-color);
+    color: white;
+    border-color: var(--secondary-color);
+}
+
+.filter-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.apply-btn, .clear-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.apply-btn {
+    background: var(--secondary-color);
+    color: white;
+    flex: 1;
+}
+
+.apply-btn:hover {
+    background: #0052cc;
+}
+
+.clear-btn {
+    background: var(--border-color);
+    color: var(--text-color);
+}
+
+.clear-btn:hover {
+    background: var(--text-light);
+    color: white;
+}
+
+/* Products Header */
+.products-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.results-count {
+    color: var(--text-light);
+    font-size: 0.95rem;
+}
+
+.sort-options select {
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    background: white;
+    cursor: pointer;
+}
+
+/* Products Grid */
+.shop-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.product-card {
+    background: var(--bg-light);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-light);
+    transition: var(--transition);
+    overflow: hidden;
+    position: relative;
+}
+
+.product-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-medium);
+}
+
+.product-img {
+    position: relative;
+    overflow: hidden;
+}
+
+.product-img img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    transition: var(--transition);
+}
+
+.product-card:hover .product-img img {
+    transform: scale(1.05);
+}
+
+.product-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: var(--accent-color);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.product-details {
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.product-title {
+    color: var(--primary-color);
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+}
+
+.product-price {
+    color: #004cff;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.old-price {
+    color: var(--text-light);
+    font-size: 1rem;
+    text-decoration: line-through;
+    margin-right: 0.5rem;
+}
+
+.discount {
+    color: var(--accent-color);
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.product-colors {
+    display: flex;
+    justify-content: center;
+    gap: 0.3rem;
+    margin-bottom: 1rem;
+}
+
+.product-color {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1px solid var(--border-color);
+}
+
+.add-to-cart-btn {
+    width: 100%;
+    padding: 0.75rem;
+    background: linear-gradient(135deg, var(--secondary-color), #4dabf7);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.add-to-cart-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-heavy);
+}
+
+/* Loading and No Products */
+.loading {
+    text-align: center;
+    padding: 3rem;
+    color: var(--text-light);
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--border-color);
+    border-top: 4px solid var(--secondary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.no-products {
+    text-align: center;
+    padding: 3rem;
+    color: var(--text-light);
+}
+
+.no-products i {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+/* Pagination */
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+}
+
+.pagination-btn {
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    background: white;
+    color: var(--text-color);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: var(--transition);
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.pagination-btn:hover {
+    background: var(--secondary-color);
+    color: white;
+    border-color: var(--secondary-color);
+}
+
+.pagination-btn.active {
+    background: var(--secondary-color);
+    color: white;
+    border-color: var(--secondary-color);
+}
+
+.pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pagination-info {
+    color: var(--text-light);
+    font-size: 0.9rem;
+    margin: 0 1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .shop-container {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .filter-toggle {
+        justify-content: center;
+    }
+
+    .filters-content.active {
+        max-height: 600px;
+    }
+
+    .filter-actions {
+        flex-direction: column;
+    }
+
+    .products-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .sort-options {
+        width: 100%;
+    }
+
+    .sort-options select {
+        width: 100%;
+    }
+
+    .price-range {
+        justify-content: center;
+    }
+
+    .pagination-container {
+        gap: 0.3rem;
+    }
+
+    .pagination-btn {
+        padding: 6px 10px;
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .shop-section {
+        padding: 20px 3%;
+    }
+
+    .shop-container {
+        grid-template-columns: 1fr;
+    }
+
+    .product-details {
+        padding: 1rem;
+    }
+
+    .filter-section {
+        padding: 1rem;
+    }
+
+    .search-box {
+        max-width: 100%;
+    }
+}
+
+/* Desktop - 4 products per row */
+@media (min-width: 1024px) {
+    .shop-container {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+</style>
+
+<script>
+class ProductFilter {
+    constructor() {
+        this.currentPage = 1;
+        this.productsPerPage = 12;
+        this.allProducts = [];
+        this.filteredProducts = [];
+        this.colors = [];
+        this.sizes = [];
+        this.filters = {
+            search: '',
+            minPrice: '',
+            maxPrice: '',
+            colors: [],
+            sizes: [],
+            sort: 'name'
+        };
+        
+        this.init();
+    }
+
+    async init() {
+        this.bindEvents();
+        await this.loadData();
+        this.renderProducts();
+    }
+
+    bindEvents() {
+        // Search
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('input', this.debounce((e) => {
+            this.filters.search = e.target.value;
+            this.applyFilters();
+        }, 300));
+
+        // Filter toggle
+        const filterToggle = document.getElementById('filterToggle');
+        const filtersContent = document.getElementById('filtersContent');
+        filterToggle.addEventListener('click', () => {
+            filterToggle.classList.toggle('active');
+            filtersContent.classList.toggle('active');
+        });
+
+        // Price filters
+        document.getElementById('minPrice').addEventListener('change', (e) => {
+            this.filters.minPrice = e.target.value;
+        });
+
+        document.getElementById('maxPrice').addEventListener('change', (e) => {
+            this.filters.maxPrice = e.target.value;
+        });
+
+        // Sort
+        document.getElementById('sortSelect').addEventListener('change', (e) => {
+            this.filters.sort = e.target.value;
+            this.applyFilters();
+        });
+
+        // Filter buttons
+        document.getElementById('applyFilters').addEventListener('click', () => {
+            this.applyFilters();
+        });
+
+        document.getElementById('clearFilters').addEventListener('click', () => {
+            this.clearFilters();
+        });
+    }
+
+    async loadData() {
+        this.showLoading(true);
+        try {
+            // Load products
+            const productsResponse = await fetch('/api/products/');
+            this.allProducts = await productsResponse.json();
+
+            // Load colors
+            const colorsResponse = await fetch('/api/colors/');
+            this.colors = await colorsResponse.json();
+
+            // Load sizes
+            const sizesResponse = await fetch('/api/sizes/');
+            this.sizes = await sizesResponse.json();
+
+            this.renderColorFilters();
+            this.renderSizeFilters();
+            this.filteredProducts = [...this.allProducts];
+
+        } catch (error) {
+            console.error('Error loading data:', error);
+            document.getElementById('noProducts').style.display = 'block';
+            document.getElementById('noProducts').innerHTML = '<p>حدث خطأ أثناء تحميل البيانات</p>';
+        } finally {
+            this.showLoading(false);
+        }
+    }
+
+    renderColorFilters() {
+        const container = document.getElementById('colorFilters');
+        container.innerHTML = this.colors.map(color => `
+            <div class="color-option" 
+                 style="background-color: ${color.name}" 
+                 data-color-id="${color.id}"
+                 title="${color.name}">
+            </div>
+        `).join('');
+
+        // Bind color filter events
+        container.querySelectorAll('.color-option').forEach(option => {
+            option.addEventListener('click', (e) => {
+                const colorId = parseInt(e.target.dataset.colorId);
+                e.target.classList.toggle('selected');
+                
+                if (e.target.classList.contains('selected')) {
+                    if (!this.filters.colors.includes(colorId)) {
+                        this.filters.colors.push(colorId);
+                    }
+                } else {
+                    this.filters.colors = this.filters.colors.filter(id => id !== colorId);
+                }
+            });
+        });
+    }
+
+    renderSizeFilters() {
+        const container = document.getElementById('sizeFilters');
+        container.innerHTML = this.sizes.map(size => `
+            <div class="size-option" data-size-id="${size.id}">
+                ${size.name}
+            </div>
+        `).join('');
+
+        // Bind size filter events
+        container.querySelectorAll('.size-option').forEach(option => {
+            option.addEventListener('click', (e) => {
+                const sizeId = parseInt(e.target.dataset.sizeId);
+                e.target.classList.toggle('selected');
+                
+                if (e.target.classList.contains('selected')) {
+                    if (!this.filters.sizes.includes(sizeId)) {
+                        this.filters.sizes.push(sizeId);
+                    }
+                } else {
+                    this.filters.sizes = this.filters.sizes.filter(id => id !== sizeId);
+                }
+            });
+        });
+    }
+
+    applyFilters() {
+        let filtered = [...this.allProducts];
+
+        // Search filter
+        if (this.filters.search) {
+            const searchTerm = this.filters.search.toLowerCase();
+            filtered = filtered.filter(product => 
+                product.name.toLowerCase().includes(searchTerm) ||
+                (product.description && product.description.toLowerCase().includes(searchTerm))
+            );
+        }
+
+        // Price filter
+        if (this.filters.minPrice) {
+            filtered = filtered.filter(product => product.price >= parseFloat(this.filters.minPrice));
+        }
+        if (this.filters.maxPrice) {
+            filtered = filtered.filter(product => product.price <= parseFloat(this.filters.maxPrice));
+        }
+
+        // Color filter
+        if (this.filters.colors.length > 0) {
+            filtered = filtered.filter(product => 
+                product.colors && product.colors.some(color => this.filters.colors.includes(color.id))
+            );
+        }
+
+        // Size filter
+        if (this.filters.sizes.length > 0) {
+            filtered = filtered.filter(product => 
+                product.sizes && product.sizes.some(size => this.filters.sizes.includes(size.id))
+            );
+        }
+
+        // Sort
+        this.sortProducts(filtered);
+
+        this.filteredProducts = filtered;
+        this.currentPage = 1;
+        this.renderProducts();
+    }
+
+    sortProducts(products) {
+        switch (this.filters.sort) {
+            case 'price_asc':
+                products.sort((a, b) => a.price - b.price);
+                break;
+            case 'price_desc':
+                products.sort((a, b) => b.price - a.price);
+                break;
+            case 'newest':
+                products.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                break;
+            case 'name':
+            default:
+                products.sort((a, b) => a.name.localeCompare(b.name, 'ar'));
+                break;
+        }
+    }
+
+    clearFilters() {
+        this.filters = {
+            search: '',
+            minPrice: '',
+            maxPrice: '',
+            colors: [],
+            sizes: [],
+            sort: 'name'
+        };
+
+        // Clear UI
+        document.getElementById('searchInput').value = '';
+        document.getElementById('minPrice').value = '';
+        document.getElementById('maxPrice').value = '';
+        document.getElementById('sortSelect').value = 'name';
+        
+        document.querySelectorAll('.color-option.selected, .size-option.selected').forEach(el => {
+            el.classList.remove('selected');
+        });
+
+        this.filteredProducts = [...this.allProducts];
+        this.currentPage = 1;
+        this.renderProducts();
+    }
+
+    renderProducts() {
+        const container = document.getElementById('shopContainer');
+        const startIndex = (this.currentPage - 1) * this.productsPerPage;
+        const endIndex = startIndex + this.productsPerPage;
+        const pageProducts = this.filteredProducts.slice(startIndex, endIndex);
+
+        if (this.filteredProducts.length === 0) {
+            container.innerHTML = '';
+            document.getElementById('noProducts').style.display = 'block';
+            document.getElementById('paginationContainer').innerHTML = '';
+            this.updateResultsCount();
+            return;
+        }
+
+        document.getElementById('noProducts').style.display = 'none';
+
+        container.innerHTML = pageProducts.map(product => {
+            const colors = product.colors ? product.colors.slice(0, 3) : [];
+            const colors_name = product.colors_names ? product.colors_names.slice(0, 3) : [];
+            const discount = product.discount ? Math.round(((product.old_price - product.price) / product.old_price) * 100) : 0;
+            
+            return `
+                <div class="product-card">
+                    <div class="product-img">
+                        <img src="${product.image_1}" alt="${product.name}" loading="lazy">
+                        ${discount > 0 ? `<div class="product-badge">${discount}% خصم</div>` : ''}
+                    </div>
+                    <div class="product-details">
+                        <h3 class="product-title">${product.name}</h3>
+                        <div class="product-price">
+                            ${product.price} MAD
+                        </div>
+                        ${colors.length > 0 ? `
+                            <div class="product-colors">
+                                ${colors_name.map(color => `<div class="product-color" style="background-color: ${color}" title="${color}"></div>`).join('')}
+                            </div>
+                        ` : ''}
+                        <button class="add-to-cart-btn" onclick="viewDetail(${product.id})">
+                            شراء الآن
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        this.renderPagination();
+        this.updateResultsCount();
+    }
+
+    renderPagination() {
+        const container = document.getElementById('paginationContainer');
+        const totalPages = Math.ceil(this.filteredProducts.length / this.productsPerPage);
+        
+        if (totalPages <= 1) {
+            container.innerHTML = '';
+            return;
+        }
+
+        let paginationHTML = '';
+        
+        // Previous button
+        paginationHTML += `
+            <button class="pagination-btn" ${this.currentPage === 1 ? 'disabled' : ''} 
+                    onclick="productFilter.changePage(${this.currentPage - 1})">
+                <i class="bi bi-chevron-right"></i>
+            </button>
+        `;
+
+        // Page numbers
+        const startPage = Math.max(1, this.currentPage - 2);
+        const endPage = Math.min(totalPages, this.currentPage + 2);
+
+        if (startPage > 1) {
+            paginationHTML += `<button class="pagination-btn" onclick="productFilter.changePage(1)">1</button>`;
+            if (startPage > 2) {
+                paginationHTML += `<span class="pagination-info">...</span>`;
+            }
+        }
+
+        for (let i = startPage; i <= endPage; i++) {
+            paginationHTML += `
+                <button class="pagination-btn ${i === this.currentPage ? 'active' : ''}" 
+                        onclick="productFilter.changePage(${i})">${i}</button>
+            `;
+        }
+
+        if (endPage < totalPages) {
+            if (endPage < totalPages - 1) {
+                paginationHTML += `<span class="pagination-info">...</span>`;
+            }
+            paginationHTML += `<button class="pagination-btn" onclick="productFilter.changePage(${totalPages})">${totalPages}</button>`;
+        }
+
+        // Next button
+        paginationHTML += `
+            <button class="pagination-btn" ${this.currentPage === totalPages ? 'disabled' : ''} 
+                    onclick="productFilter.changePage(${this.currentPage + 1})">
+                <i class="bi bi-chevron-left"></i>
+            </button>
+        `;
+
+        container.innerHTML = paginationHTML;
+    }
+
+    changePage(page) {
+        const totalPages = Math.ceil(this.filteredProducts.length / this.productsPerPage);
+        if (page >= 1 && page <= totalPages) {
+            this.currentPage = page;
+            this.renderProducts();
+            // Scroll to top
+            document.querySelector('.shop-section').scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+
+    updateResultsCount() {
+        const startIndex = (this.currentPage - 1) * this.productsPerPage;
+        const endIndex = Math.min(startIndex + this.productsPerPage, this.filteredProducts.length);
+        
+        document.getElementById('currentResults').textContent = 
+            this.filteredProducts.length > 0 ? `${startIndex + 1}-${endIndex}` : '0';
+        document.getElementById('totalResults').textContent = this.filteredProducts.length;
+    }
+
+    showLoading(show) {
+        document.getElementById('loading').style.display = show ? 'block' : 'none';
+    }
+
+    debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+}
+
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    window.productFilter = new ProductFilter();
+});
+
+// Global function for product detail view
+function viewDetail(id) {
+    window.location.href = `/product/${id}`;
+}
+</script>
+{% endblock %}

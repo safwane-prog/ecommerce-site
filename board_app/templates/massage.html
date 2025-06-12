@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>رسائل التواصل - لوحة التحكم</title>
+    <link rel="stylesheet" href="\static\dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    /* إعادة تعيين CSS الأساسي */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* الخطوط والألوان الأساسية */
+:root {
+    --primary-color: #2563eb;
+    --primary-dark: #1d4ed8;
+    --secondary-color: #64748b;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
+    --background-color: #f8fafc;
+    --sidebar-bg: #1e293b;
+    --sidebar-hover: #334155;
+    --white: #ffffff;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-300: #cbd5e1;
+    --gray-400: #94a3b8;
+    --gray-500: #64748b;
+    --gray-600: #475569;
+    --gray-700: #334155;
+    --gray-800: #1e293b;
+    --gray-900: #0f172a;
+    --border-radius: 12px;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+}
+
+/* حاوية الرسائل */
+.messages-container {
+    padding: 2rem;
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+.messages-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.messages-header h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--gray-800);
+    font-size: 1.75rem;
+    font-weight: 700;
+}
+
+.messages-header h2 i {
+    color: var(--primary-color);
+    font-size: 1.5rem;
+}
+
+.message-filters {
+    display: flex;
+    gap: 0.75rem;
+    background: var(--white);
+    padding: 0.5rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--gray-200);
+}
+
+.filter-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    border: none;
+    background: transparent;
+    color: var(--gray-600);
+    border-radius: calc(var(--border-radius) - 4px);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    position: relative;
+    overflow: hidden;
+}
+
+.filter-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 0;
+    height: 100%;
+    background: linear-gradient(135deg, var(--primary-color), #3b82f6);
+    transition: width 0.3s ease;
+    z-index: -1;
+}
+
+.filter-btn:hover::before,
+.filter-btn.active::before {
+    width: 100%;
+}
+
+.filter-btn:hover,
+.filter-btn.active {
+    color: var(--white);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+/* قائمة الرسائل */
+.message-list {
+    list-style: none;
+    background: var(--white);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+}
+
+.message-item {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--gray-100);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    background: var(--white);
+}
+
+.message-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 0;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.05), rgba(59, 130, 246, 0.05));
+    transition: width 0.3s ease;
+    z-index: 0;
+}
+
+.message-item:hover::before {
+    width: 100%;
+}
+
+.message-item:hover {
+    transform: translateX(-5px);
+    box-shadow: var(--shadow-md);
+}
+
+.message-item:last-child {
+    border-bottom: none;
+}
+
+.message-item.unread {
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.02), rgba(59, 130, 246, 0.02));
+    border-right: 4px solid var(--primary-color);
+}
+
+.message-item.unread .message-sender {
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.message-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+    position: relative;
+    z-index: 1;
+}
+
+.message-sender {
+    font-weight: 600;
+    color: var(--gray-800);
+    font-size: 1.1rem;
+    margin-bottom: 0.25rem;
+}
+
+.message-email {
+    color: var(--gray-500);
+    font-size: 0.9rem;
+}
+
+.message-date {
+    color: var(--gray-400);
+    font-size: 0.85rem;
+    background: var(--gray-100);
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-weight: 500;
+}
+
+.message-subject {
+    font-weight: 600;
+    color: var(--gray-700);
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+    position: relative;
+    z-index: 1;
+}
+
+.message-content {
+    color: var(--gray-600);
+    line-height: 1.5;
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 1;
+}
+
+.message-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+    position: relative;
+    z-index: 2;
+}
+
+/* أزرار الإجراءات */
+.action-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: calc(var(--border-radius) - 4px);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    font-size: 0.9rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.action-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 0;
+    height: 100%;
+    transition: width 0.3s ease;
+    z-index: -1;
+}
+
+.reply-btn {
+    background: var(--gray-100);
+    color: var(--gray-700);
+}
+
+.reply-btn::before {
+    background: linear-gradient(135deg, var(--success-color), #059669);
+}
+
+.reply-btn:hover::before {
+    width: 100%;
+}
+
+.reply-btn:hover {
+    color: var(--white);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+.delete-btn {
+    background: var(--gray-100);
+    color: var(--gray-700);
+}
+
+.delete-btn::before {
+    background: linear-gradient(135deg, var(--danger-color), #dc2626);
+}
+
+.delete-btn:hover::before {
+    width: 100%;
+}
+
+.delete-btn:hover {
+    color: var(--white);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+/* النافذة المنبثقة */
+.message-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.message-modal.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-content {
+    background: var(--white);
+    border-radius: var(--border-radius);
+    width: 90%;
+    max-width: 700px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-xl);
+    border: 1px solid var(--gray-200);
+    transform: scale(0.9) translateY(20px);
+    transition: all 0.3s ease;
+}
+
+.message-modal.active .modal-content {
+    transform: scale(1) translateY(0);
+}
+
+.modal-header {
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid var(--gray-200);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(135deg, var(--gray-50), var(--white));
+}
+
+.modal-header h3 {
+    color: var(--gray-800);
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.close-modal {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: var(--gray-400);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0.25rem;
+    border-radius: 50%;
+    line-height: 1;
+}
+
+.close-modal:hover {
+    color: var(--danger-color);
+    background: var(--gray-100);
+    transform: rotate(90deg);
+}
+
+.modal-body {
+    padding: 2rem;
+}
+
+.modal-message-info {
+    margin-bottom: 2rem;
+}
+
+.info-item {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: var(--gray-50);
+    border-radius: calc(var(--border-radius) - 4px);
+    border-right: 4px solid var(--primary-color);
+}
+
+.info-item h4 {
+    color: var(--gray-700);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.info-item p {
+    color: var(--gray-800);
+    font-size: 1rem;
+    word-break: break-word;
+}
+
+.modal-message-content {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: calc(var(--border-radius) - 4px);
+    padding: 1.5rem;
+}
+
+.modal-message-content h4 {
+    color: var(--gray-700);
+    font-weight: 600;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+}
+
+.modal-message-content p {
+    color: var(--gray-800);
+    line-height: 1.8;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.modal-footer {
+    padding: 1.5rem 2rem;
+    border-top: 1px solid var(--gray-200);
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    background: var(--gray-50);
+}
+
+/* ترقيم الصفحات */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 2rem;
+    list-style: none;
+}
+
+.page-item {
+    display: flex;
+}
+
+.page-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--gray-300);
+    background: var(--white);
+    color: var(--gray-700);
+    text-decoration: none;
+    border-radius: calc(var(--border-radius) - 4px);
+    transition: all 0.3s ease;
+    font-weight: 500;
+    min-width: 44px;
+}
+
+.page-link:hover {
+    background: var(--primary-color);
+    color: var(--white);
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+.page-item.active .page-link {
+    background: var(--primary-color);
+    color: var(--white);
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow);
+}
+
+.page-item.disabled .page-link {
+    background: var(--gray-100);
+    color: var(--gray-400);
+    cursor: not-allowed;
+    border-color: var(--gray-200);
+}
+
+.page-item.disabled .page-link:hover {
+    transform: none;
+    box-shadow: none;
+    background: var(--gray-100);
+    color: var(--gray-400);
+}
+
+/* الاستجابة للأجهزة المحمولة */
+@media (max-width: 1024px) {
+    .sidebar {
+        width: 260px;
+    }
+    
+    .main-content {
+        margin-right: 260px;
+    }
+    
+    .messages-container {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+    }
+    
+    .sidebar.active {
+        transform: translateX(0);
+    }
+    
+    .main-content {
+        margin-right: 0;
+    }
+    
+    .header {
+        padding: 1rem;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .search {
+        max-width: none;
+    }
+    
+    .messages-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .message-filters {
+        overflow-x: auto;
+        justify-content: flex-start;
+    }
+    
+    .message-item {
+        padding: 1rem;
+    }
+    
+    .message-header {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .message-actions {
+        justify-content: flex-start;
+        margin-top: 1rem;
+    }
+    
+    .modal-content {
+        width: 95%;
+        margin: 1rem;
+    }
+    
+    .modal-header,
+    .modal-body,
+    .modal-footer {
+        padding: 1rem;
+    }
+    
+    .pagination {
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 480px) {
+    .messages-container {
+        padding: 1rem;
+    }
+    
+    .filter-btn {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.85rem;
+    }
+    
+    .action-btn {
+        padding: 0.4rem 0.75rem;
+        font-size: 0.8rem;
+    }
+    
+    .message-sender {
+        font-size: 1rem;
+    }
+    
+    .modal-content {
+        width: 100%;
+        height: 100vh;
+        border-radius: 0;
+        margin: 0;
+    }
+}
+
+/* تأثيرات الحركة المتقدمة */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.message-item {
+    animation: fadeInUp 0.5s ease forwards;
+}
+
+.message-filters .filter-btn {
+    animation: slideInRight 0.3s ease forwards;
+}
+
+.message-filters .filter-btn:nth-child(1) { animation-delay: 0.1s; }
+.message-filters .filter-btn:nth-child(2) { animation-delay: 0.2s; }
+.message-filters .filter-btn:nth-child(3) { animation-delay: 0.3s; }
+
+/* تحسينات إضافية للتفاعل */
+.message-item:active {
+    transform: translateX(-3px) scale(0.98);
+}
+
+.action-btn:active {
+    transform: translateY(0) scale(0.95);
+}
+
+.filter-btn:active {
+    transform: translateY(0) scale(0.95);
+}
+
+/* تحسين شريط التمرير المخصص */
+.modal-content::-webkit-scrollbar,
+.message-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-content::-webkit-scrollbar-track,
+.message-list::-webkit-scrollbar-track {
+    background: var(--gray-100);
+    border-radius: 4px;
+}
+
+.modal-content::-webkit-scrollbar-thumb,
+.message-list::-webkit-scrollbar-thumb {
+    background: var(--gray-300);
+    border-radius: 4px;
+    transition: background 0.3s ease;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover,
+.message-list::-webkit-scrollbar-thumb:hover {
+    background: var(--gray-400);
+}
+
+/* تحسينات التركيز للوصول */
+.filter-btn:focus,
+.action-btn:focus,
+.page-link:focus,
+.search input:focus {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+/* تأثيرات إضافية للعناصر التفاعلية */
+.notifications:active {
+    transform: scale(0.95);
+}
+
+.user:active {
+    transform: scale(0.98);
+}
+
+/* تحسين عرض النصوص الطويلة */
+.message-content,
+.message-subject {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.message-subject {
+    -webkit-line-clamp: 1;
+}
+</style>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- الشريط الجانبي -->
+        <div class="sidebar">
+            <div class="logo">
+                <i class="fas fa-store"></i>
+                <span>المتجر الإلكتروني</span>
+            </div>
+            <ul class="menu">
+                <li>
+                    <a href="{% url 'dashboard' %}">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>الرئيسية</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'views_product' %}">
+                        <i class="fas fa-box-open"></i>
+                        <span>المنتجات</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'orders' %}">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>الطلبات</span>
+                    </a>
+                </li>
+                <li class="active">
+                    <a href="{% url 'massage' %}">
+                        <i class="fas fa-envelope"></i>
+                        <span>الرسائل</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'settings' %}">
+                        <i class="fas fa-cog"></i>
+                        <span>الإعدادات</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- المحتوى الرئيسي -->
+        <div class="main-content">
+            <!-- شريط العنوان -->
+            <div class="header">
+                <div class="search">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="ابحث هنا...">
+                </div>
+                <div class="user-area">
+                    <div class="notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge">3</span>
+                    </div>
+                    <div class="user">
+                        <img src="https://via.placeholder.com/150" alt="صورة المستخدم">
+                        <span>مدير المتجر</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- محتوى الرسائل -->
+            <div class="messages-container">
+                <div class="messages-header">
+                    <h2>
+                        <i class="fas fa-envelope"></i>
+                        رسائل التواصل
+                    </h2>
+                    <div class="message-filters">
+                        <button class="filter-btn active" data-filter="all">
+                            <span>الكل</span>
+                            <i class="fas fa-inbox"></i>
+                        </button>
+                        <button class="filter-btn" data-filter="unread">
+                            <span>غير المقروءة</span>
+                            <i class="fas fa-envelope"></i>
+                        </button>
+                        <button class="filter-btn" data-filter="important">
+                            <span>المهمة</span>
+                            <i class="fas fa-star"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <ul class="message-list" id="messagesList">
+                    <!-- سيتم ملء هذه القائمة عبر JavaScript -->
+                </ul>
+
+                <!-- Pagination -->
+                <div class="pagination" id="pagination">
+                    <!-- سيتم ملء هذا الجزء عبر JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- نافذة عرض الرسالة -->
+        <div class="message-modal" id="messageModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>تفاصيل الرسالة</h3>
+                    <button class="close-modal" id="closeModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="modal-message-info">
+                        <div class="info-item">
+                            <h4>الاسم الكامل:</h4>
+                            <p id="modalFullName">-</p>
+                        </div>
+                        <div class="info-item">
+                            <h4>البريد الإلكتروني:</h4>
+                            <p id="modalEmail">-</p>
+                        </div>
+                        <div class="info-item">
+                            <h4>الموضوع:</h4>
+                            <p id="modalSubject">-</p>
+                        </div>
+                        <div class="info-item">
+                            <h4>تاريخ الإرسال:</h4>
+                            <p id="modalDate">-</p>
+                        </div>
+                    </div>
+                    <div class="modal-message-content">
+                        <h4>نص الرسالة:</h4>
+                        <p id="modalMessage">-</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="action-btn delete-btn" id="deleteMessageBtn">
+                        <span>حذف</span>
+                        <i class="fas fa-trash"></i>
+                    </button>
+                    <button class="action-btn reply-btn" id="replyMessageBtn">
+                        <span>رد</span>
+                        <i class="fas fa-reply"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    // عناصر DOM
+    const messagesList = document.getElementById('messagesList');
+    const messageModal = document.getElementById('messageModal');
+    const closeModal = document.getElementById('closeModal');
+    const modalFullName = document.getElementById('modalFullName');
+    const modalEmail = document.getElementById('modalEmail');
+    const modalSubject = document.getElementById('modalSubject');
+    const modalDate = document.getElementById('modalDate');
+    const modalMessage = document.getElementById('modalMessage');
+    const deleteMessageBtn = document.getElementById('deleteMessageBtn');
+    const replyMessageBtn = document.getElementById('replyMessageBtn');
+    const filterButtons = document.querySelectorAll('.filter-btn');
+
+    // متغيرات التطبيق
+    let currentMessages = [];
+    let currentMessageId = null;
+    let currentFilter = 'all';
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    // دالة لجلب الرسائل من API
+    async function fetchMessages() {
+        try {
+            const response = await fetch('/api/contact-view/');
+            if (!response.ok) {
+                throw new Error('فشل في جلب البيانات');
+            }
+            const data = await response.json();
+            currentMessages = Array.isArray(data) ? data : [data]; // تحويل البيانات إلى مصفوفة إذا لم تكن
+            renderMessages(currentMessages);
+            renderPagination();
+        } catch (error) {
+            console.error('حدث خطأ:', error);
+            messagesList.innerHTML = `<li class="message-item">حدث خطأ في جلب الرسائل. يرجى المحاولة لاحقاً.</li>`;
+        }
+    }
+
+    // دالة لعرض الرسائل
+    function renderMessages(messages) {
+        messagesList.innerHTML = '';
+
+        if (messages.length === 0) {
+            messagesList.innerHTML = `<li class="message-item">لا توجد رسائل لعرضها</li>`;
+            return;
+        }
+
+        messages.forEach(message => {
+            const messageItem = document.createElement('li');
+            messageItem.className = `message-item ${!message.is_read ? 'unread' : ''}`;
+            messageItem.dataset.id = message.id;
+            
+            // تنسيق التاريخ
+            const date = new Date(message.created_at);
+            const formattedDate = date.toLocaleDateString('ar-EG', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            messageItem.innerHTML = `
+                <div class="message-header">
+                    <div>
+                        <div class="message-sender">${message.full_name}</div>
+                        <div class="message-email">${message.email}</div>
+                    </div>
+                    <div class="message-date">${formattedDate}</div>
+                </div>
+                <div class="message-subject">${message.subject}</div>
+                <div class="message-content">${message.message.substring(0, 100)}...</div>
+                <div class="message-actions">
+                    <button class="action-btn reply-btn" data-id="${message.id}">
+                        <span>رد</span>
+                        <i class="fas fa-reply"></i>
+                    </button>
+                    <button class="action-btn delete-btn" data-id="${message.id}">
+                        <span>حذف</span>
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `;
+
+            messagesList.appendChild(messageItem);
+        });
+
+        // إضافة مستمعي الأحداث للرسائل
+        document.querySelectorAll('.message-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                if (!e.target.closest('.message-actions')) {
+                    const messageId = item.dataset.id;
+                    showMessageDetails(messageId);
+                }
+            });
+        });
+
+        // مستمعي الأحداث لأزرار الحذف والرد
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                deleteMessage(btn.dataset.id);
+            });
+        });
+
+        document.querySelectorAll('.reply-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                replyToMessage(btn.dataset.id);
+            });
+        });
+    }
+
+    // دالة لعرض تفاصيل الرسالة
+    async function showMessageDetails(messageId) {
+        try {
+            const response = await fetch(`/api/contact-view/${messageId}/`);
+            if (!response.ok) {
+                throw new Error('فشل في جلب تفاصيل الرسالة');
+            }
+            const message = await response.json();
+            
+            // تحديث حالة القراءة إذا كانت غير مقروءة
+            if (!message.is_read) {
+                await markAsRead(messageId);
+            }
+
+            // تنسيق التاريخ
+            const date = new Date(message.created_at);
+            const formattedDate = date.toLocaleDateString('ar-EG', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            // تعبئة البيانات في النافذة المنبثقة
+            modalFullName.textContent = message.full_name;
+            modalEmail.textContent = message.email;
+            modalSubject.textContent = message.subject;
+            modalDate.textContent = formattedDate;
+            modalMessage.textContent = message.message;
+            
+            currentMessageId = messageId;
+            messageModal.classList.add('active');
+            
+            // تحديث القائمة لتعكس حالة القراءة
+            fetchMessages();
+        } catch (error) {
+            console.error('حدث خطأ:', error);
+            alert('حدث خطأ في عرض تفاصيل الرسالة');
+        }
+    }
+
+    // دالة لتحديد الرسالة كمقروءة
+    async function markAsRead(messageId) {
+        try {
+            const response = await fetch(`/api/contact-view/${messageId}/`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify({ is_read: true })
+            });
+            
+            if (!response.ok) {
+                throw new Error('فشل في تحديث حالة الرسالة');
+            }
+        } catch (error) {
+            console.error('حدث خطأ:', error);
+        }
+    }
+
+    // دالة لحذف الرسالة
+
+async function deleteMessage(messageId) {
+        if (!confirm('هل أنت متأكد من حذف هذا المنتج؟')) return;
+        
+        try {
+            const csrftoken = getCookie('csrftoken');
+            const response = await fetch(`/api/contact-view/${messageId}/`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+                throw new Error(`Failed to delete product: ${response.status} ${response.statusText}`);
+            }
+// إغلاق النافذة المنبثقة إذا كانت مفتوحة
+                if (messageModal.classList.contains('active')) {
+                    messageModal.classList.remove('active');
+                }
+
+        } catch (error) {
+            console.error('Error deleting product:', error);
+            alert(`حدث خطأ أثناء حذف المنتج: ${error.message}`);
+        }
+    }
+    // دالة للرد على الرسالة
+    function replyToMessage(messageId) {
+        const message = currentMessages.find(msg => msg.id == messageId);
+        if (message) {
+            alert(`سيتم فتح نافذة الرد على الرسالة من ${message.full_name} (${message.email})`);
+            // هنا يمكنك إضافة منطق إرسال الرد
+        }
+    }
+
+    // دالة لتصفية الرسائل
+    function filterMessages(filter) {
+        currentFilter = filter;
+        
+        // تحديث حالة أزرار التصفية
+        filterButtons.forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.filter === filter);
+        });
+        
+        let filteredMessages = [...currentMessages];
+        
+        if (filter === 'unread') {
+            filteredMessages = filteredMessages.filter(msg => !msg.is_read);
+        } else if (filter === 'important') {
+            // يمكنك إضافة منطق للرسائل المهمة إذا كان لديك حقل للإشارة إليها
+            filteredMessages = filteredMessages.filter(msg => msg.important); // هذا مثال فقط
+        }
+        
+        renderMessages(filteredMessages);
+    }
+
+    // دالة لعرض ترقيم الصفحات (يمكن تطويرها حسب احتياجاتك)
+    function renderPagination() {
+        // يمكنك تطوير هذه الدالة حسب احتياجاتك إذا كان API يدعم التقسيم إلى صفحات
+        const pagination = document.getElementById('pagination');
+        pagination.innerHTML = `
+            <li class="page-item disabled">
+                <a class="page-link" href="#" tabindex="-1">السابق</a>
+            </li>
+            <li class="page-item active">
+                <a class="page-link" href="#">1</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="#">2</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="#">التالي</a>
+            </li>
+        `;
+    }
+
+    // مستمعي الأحداث
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchMessages();
+        
+        // تصفية الرسائل
+        filterButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterMessages(btn.dataset.filter);
+            });
+        });
+        
+        // إغلاق النافذة المنبثقة
+        closeModal.addEventListener('click', () => {
+            messageModal.classList.remove('active');
+        });
+        
+        // إغلاق النافذة المنبثقة عند النقر خارجها
+        messageModal.addEventListener('click', (e) => {
+            if (e.target === messageModal) {
+                messageModal.classList.remove('active');
+            }
+        });
+        
+        // حذف الرسالة من النافذة المنبثقة
+        deleteMessageBtn.addEventListener('click', () => {
+            if (currentMessageId) {
+                deleteMessage(currentMessageId);
+            }
+        });
+        
+        // الرد على الرسالة من النافذة المنبثقة
+        replyMessageBtn.addEventListener('click', () => {
+            if (currentMessageId) {
+                replyToMessage(currentMessageId);
+            }
+        });
+    });
+</script>
+</body>
+</html>

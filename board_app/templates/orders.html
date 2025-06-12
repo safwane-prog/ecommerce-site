@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة الطلبات - المتجر الإلكتروني</title>
+    <link rel="stylesheet" href="\static\dashboard.css">
+    <link rel="stylesheet" href="\static\order.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 20px;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .modal-content h3 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .modal-content .details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .modal-content img {
+            max-width: 100%;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        .modal-content .actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        .modal-content .actions button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .modal-content .actions button.confirm {
+            background: #d9534f;
+            color: white;
+        }
+        .modal-content .actions button.cancel {
+            background: #6c757d;
+            color: white;
+        }
+        .close {
+            float: left;
+            cursor: pointer;
+            font-size: 24px;
+            color: #333;
+        }
+        .filters {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin-top: 20px;
+        }
+        .page-btn {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            background: #f9f9f9;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .page-btn.active {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+        .page-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+        .action-btn.delete {
+            background: #d9534f;
+            color: white;
+        }
+        .action-btn.delete:hover {
+            background: #c9302c;
+        }
+        .is-paid {
+            color: #5cb85c;
+            font-weight: bold;
+        }
+        .not-paid {
+            color: #d9534f;
+            font-weight: bold;
+        }
+        .bulk-actions {
+            margin: 10px 0;
+            display: flex;
+            gap: 10px;
+        }
+        .bulk-actions select, .bulk-actions button {
+            padding: 8px;
+            border-radius: 4px;
+        }
+        .bulk-actions button {
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .bulk-actions button:hover {
+            background: #0056b3;
+        }
+        .error-message {
+            color: #d9534f;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- الشريط الجانبي -->
+        <div class="sidebar">
+            <div class="logo">
+                <i class="fas fa-store"></i>
+                <span>المتجر الإلكتروني</span>
+            </div>
+            <ul class="menu">
+                    <li>
+                        <a href="{% url 'dashboard' %}">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>الرئيسية</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'views_product' %}">
+                            <i class="fas fa-box-open"></i>
+                            <span>المنتجات</span>
+                        </a>
+                    </li>
+                    <li  class="active">
+                        <a href="{% url 'orders' %}">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span>الطلبات</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="{% url 'massage' %}">
+                            <i class="fas fa-envelope"></i>
+                            <span>الرسائل</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="{% url 'settings' %}">
+                            <i class="fas fa-cog"></i>
+                            <span>الإعدادات</span>
+                        </a>
+                    </li>
+                </ul>
+        </div>
+
+        <!-- المحتوى الرئيسي -->
+        <div class="main-content">
+            <!-- شريط العنوان -->
+            <div class="header">
+                <div class="search">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="بحث عن طلب (رقم الطلب، اسم العميل)...">
+                </div>
+                <div class="user-area">
+                    <div class="notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge">3</span>
+                    </div>
+                    <div class="user">
+                        <img src="https://via.placeholder.com/40" alt="صورة المستخدم">
+                        <span>مدير المتجر</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- أدوات التحكم بالطلبات -->
+            <div class="orders-controls">
+                <h2>إدارة الطلبات</h2>
+                <div class="controls">
+                    <div class="tabs">
+                        <button class="tab-btn active" data-status="all">الكل (<span id="totalOrders">0</span>)</button>
+                        <button class="tab-btn" data-status="paid">مدفوع (<span id="paidOrders">0</span>)</button>
+                        <button class="tab-btn" data-status="not_paid">غير مدفوع (<span id="notPaidOrders">0</span>)</button>
+                    </div>
+                    <div class="filters">
+                        <select id="sortBy">
+                            <option value="date_desc">الأحدث أولاً</option>
+                            <option value="date_asc">الأقدم أولاً</option>
+                            <option value="amount_desc">المبلغ (تنازلي)</option>
+                            <option value="amount_asc">المبلغ (تصاعدي)</option>
+                        </select>
+                        <input type="date" id="fromDate" placeholder="من تاريخ">
+                        <input type="date" id="toDate" placeholder="إلى تاريخ">
+                    </div>
+                    <div class="bulk-actions">
+                        <select id="bulkAction">
+                            <option value="">اختر إجراء</option>
+                            <option value="delete">حذف</option>
+                            <option value="set_paid">تعيين كمدفوع</option>
+                            <option value="set_not_paid">تعيين كغير مدفوع</option>
+                        </select>
+                        <button onclick="applyBulkAction()">تطبيق الإجراء</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- جدول الطلبات -->
+            <div class="orders-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" id="selectAll" onclick="toggleSelectAll()"></th>
+                            <th>رقم الطلب</th>
+                            <th>العميل</th>
+                            <th>تاريخ الطلب</th>
+                            <th>المبلغ</th>
+                            <th>حالة الدفع</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersBody">
+                        <!-- سيتم ملء الجدول ديناميكيًا -->
+                    </tbody>
+                </table>
+
+                <!-- الترقيم الصفحي -->
+                <div class="pagination" id="pagination">
+                    <!-- سيتم ملء الترقيم ديناميكيًا -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة تفاصيل الطلب -->
+    <div id="orderModal" class="modal">
+        <div class="modal-content">
+            <span class="close">×</span>
+            <h3>تفاصيل الطلب</h3>
+            <div class="details-grid" id="orderDetails"></div>
+            <div class="actions">
+                <label for="isPaidCheckbox">حالة الدفع:</label>
+                <input type="checkbox" id="isPaidCheckbox">
+                <button onclick="updatePaymentStatus()">تحديث حالة الدفع</button>
+            </div>
+            <div id="orderError" class="error-message"></div>
+        </div>
+    </div>
+
+    <!-- نافذة تأكيد الحذف -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <span class="close">×</span>
+            <h3>تأكيد الحذف</h3>
+            <div id="deleteDetails"></div>
+            <div class="actions">
+                <button class="confirm" onclick="confirmDelete()">تأكيد الحذف</button>
+                <button class="cancel" onclick="closeDeleteModal()">إلغاء</button>
+            </div>
+            <div id="deleteError" class="error-message"></div>
+        </div>
+    </div>
+
+    <script>
+        const apiUrl = '/api/admin-order/';
+        const ordersPerPage = 8;
+        let currentPage = 1;
+        let allOrders = [];
+        let filteredOrders = [];
+        let currentOrderId = null;
+        let ordersToDelete = [];
+
+        // جلب البيانات من API
+        async function fetchOrders() {
+            try {
+                const response = await fetch(apiUrl);
+                if (!response.ok) throw new Error('فشل جلب الطلبات');
+                allOrders = await response.json();
+                filteredOrders = [...allOrders];
+                updateOrderCounts();
+                applyFilters();
+            } catch (error) {
+                console.error('Error fetching orders:', error);
+                alert('حدث خطأ أثناء جلب الطلبات');
+            }
+        }
+
+        // تحديث عدد الطلبات لكل حالة
+        function updateOrderCounts() {
+            const counts = {
+                all: allOrders.length,
+                paid: allOrders.filter(order => order.is_paid).length,
+                not_paid: allOrders.filter(order => !order.is_paid).length
+            };
+            document.getElementById('totalOrders').textContent = counts.all;
+            document.getElementById('paidOrders').textContent = counts.paid;
+            document.getElementById('notPaidOrders').textContent = counts.not_paid;
+        }
+
+        // تطبيق الفلاتر والبحث
+        function applyFilters() {
+            const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+            const status = document.querySelector('.tab-btn.active').dataset.status;
+            const fromDate = document.getElementById('fromDate').value;
+            const toDate = document.getElementById('toDate').value;
+            const sortBy = document.getElementById('sortBy').value;
+
+            filteredOrders = allOrders.filter(order => {
+                const matchesSearch = order.id.toString().includes(searchQuery) || 
+                                    order.full_name.toLowerCase().includes(searchQuery);
+                const matchesStatus = status === 'all' || 
+                                    (status === 'paid' && order.is_paid) || 
+                                    (status === 'not_paid' && !order.is_paid);
+                const orderDate = new Date(order.created_at);
+                const matchesDate = (!fromDate || orderDate >= new Date(fromDate)) &&
+                                  (!toDate || orderDate <= new Date(toDate));
+                return matchesSearch && matchesStatus && matchesDate;
+            });
+
+            // الفرز
+            filteredOrders.sort((a, b) => {
+                if (sortBy === 'date_desc') return new Date(b.created_at) - new Date(a.created_at);
+                if (sortBy === 'date_asc') return new Date(a.created_at) - new Date(b.created_at);
+                if (sortBy === 'amount_desc') return parseFloat(b.product_details.price) * b.quantity - parseFloat(a.product_details.price) * a.quantity;
+                if (sortBy === 'amount_asc') return parseFloat(a.product_details.price) * a.quantity - parseFloat(b.product_details.price) * b.quantity;
+            });
+
+            renderOrders();
+            renderPagination();
+        }
+
+        // عرض الطلبات في الجدول
+        function renderOrders() {
+            const start = (currentPage - 1) * ordersPerPage;
+            const end = start + ordersPerPage;
+            const paginatedOrders = filteredOrders.slice(start, end);
+            const tbody = document.getElementById('ordersBody');
+            tbody.innerHTML = '';
+
+            paginatedOrders.forEach(order => {
+                const total = (parseFloat(order.product_details.price) * order.quantity).toFixed(2);
+                const row = `
+                    <tr>
+                        <td><input type="checkbox" class="order-checkbox" data-id="${order.id}"></td>
+                        <td>#${order.id}</td>
+                        <td>${order.full_name}</td>
+                        <td>${new Date(order.created_at).toLocaleDateString('ar-SA')}</td>
+                        <td>${total} ر.س</td>
+                        <td><span class="${order.is_paid ? 'is-paid' : 'not-paid'}">${order.is_paid ? 'مدفوع' : 'غير مدفوع'}</span></td>
+                        <td>
+                            <button class="action-btn view" onclick="showOrderDetails(${order.id})"><i class="fas fa-eye"></i></button>
+                            <button class="action-btn print"><i class="fas fa-print"></i></button>
+                            <button class="action-btn delete" onclick="showDeleteModal(${order.id})"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        // عرض الترقيم الصفحي
+        function renderPagination() {
+            const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
+            const pagination = document.getElementById('pagination');
+            pagination.innerHTML = '';
+
+            // زر السابق
+            pagination.innerHTML += `
+                <button class="page-btn" onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
+                    <i class="fas fa-angle-right"></i>
+                </button>
+            `;
+
+            // عرض الصفحة الأولى
+            pagination.innerHTML += `
+                <button class="page-btn ${1 === currentPage ? 'active' : ''}" onclick="changePage(1)">1</button>
+            `;
+
+            // إذا كانت هناك أكثر من 5 صفحات، أظهر نقاط التوسع
+            if (totalPages > 5 && currentPage > 3) {
+                pagination.innerHTML += `<span>...</span>`;
+            }
+
+            // عرض الصفحات المحيطة بالصفحة الحالية
+            const startPage = Math.max(2, currentPage - 2);
+            const endPage = Math.min(totalPages - 1, currentPage + 2);
+            for (let i = startPage; i <= endPage; i++) {
+                if (i !== 1 && i !== totalPages) {
+                    pagination.innerHTML += `
+                        <button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">${i}</button>
+                    `;
+                }
+            }
+
+            // إذا كان هناك أكثر من 5 صفحات، أظهر نقاط التوسع
+            if (totalPages > 5 && currentPage < totalPages - 2) {
+                pagination.innerHTML += `<span>...</span>`;
+            }
+
+            // عرض الصفحة الأخيرة
+            if (totalPages > 1) {
+                pagination.innerHTML += `
+                    <button class="page-btn ${totalPages === totalPages ? 'active' : ''}" onclick="changePage(${totalPages})">${totalPages}</button>
+                `;
+            }
+
+            // زر التالي
+            pagination.innerHTML += `
+                <button class="page-btn" onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
+                    <i class="fas fa-angle-left"></i>
+                </button>
+            `;
+        }
+
+        // تغيير الصفحة
+        function changePage(page) {
+            const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
+            if (page >= 1 && page <= totalPages) {
+                currentPage = page;
+                renderOrders();
+                renderPagination();
+            }
+        }
+
+        // عرض تفاصيل الطلب
+        function showOrderDetails(orderId) {
+            const order = allOrders.find(o => o.id === orderId);
+            if (!order) return;
+
+            currentOrderId = orderId;
+            const modal = document.getElementById('orderModal');
+            const details = document.getElementById('orderDetails');
+            const isPaidCheckbox = document.getElementById('isPaidCheckbox');
+            const orderError = document.getElementById('orderError');
+            orderError.textContent = '';
+            details.innerHTML = `
+                ${order.product_details.image_1 ? `<img src="${order.product_details.image_1}" alt="${order.product_details.name}">` : ''}>
+                <p><strong>رقم الطلب:</strong> #${order.id}</p>
+                <p><strong>اسم العميل:</strong> ${order.full_name}</p>
+                <p><strong>الهاتف:</strong> ${order.phone}</p>
+                <p><strong>العنوان:</strong> ${order.address}</p>
+                <p><strong>المنتج:</strong> ${order.product_details.name}</p>
+                <p><strong>الكمية:</strong> ${order.quantity}</p>
+                <p><strong>السعر الإجمالي:</strong> ${(parseFloat(order.product_details.price) * order.quantity).toFixed(2)} ر.س</p>
+                <p><strong>تاريخ الطلب:</strong> ${new Date(order.created_at).toLocaleDateString('ar-SA')}</p>
+            `;
+            isPaidCheckbox.checked = order.is_paid;
+            modal.style.display = 'block';
+        }
+
+        // عرض نافذة تأكيد الحذف
+        function showDeleteModal(orderId) {
+            const order = allOrders.find(o => o.id === orderId);
+            if (!order) return;
+
+            ordersToDelete = [orderId];
+            const modal = document.getElementById('deleteModal');
+            const details = document.getElementById('deleteDetails');
+            const deleteError = document.getElementById('deleteError');
+            deleteError.textContent = '';
+            details.innerHTML = `
+                <p><strong>رقم الطلب:</strong> #${order.id}</p>
+                <p><strong>اسم العميل:</strong> ${order.full_name}</p>
+                <p><strong>المنتج:</strong> ${order.product_details.name}</p>
+                <p><strong>المبلغ:</strong> ${(parseFloat(order.product_details.price) * order.quantity).toFixed(2)} ر.س</p>
+            `;
+            modal.style.display = 'block';
+        }
+
+        // إغلاق نافذة تأكيد الحذف
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').style.display = 'none';
+            ordersToDelete = [];
+            document.getElementById('deleteError').textContent = '';
+        }
+
+        // تأكيد الحذف
+        async function confirmDelete() {
+            const deleteError = document.getElementById('deleteError');
+            deleteError.textContent = '';
+            try {
+                for (const orderId of ordersToDelete) {
+                    const response = await fetch(`${apiUrl}${orderId}/`, {
+                        method: 'DELETE'
+                    });
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.detail || `فشل حذف الطلب #${orderId}`);
+                    }
+                }
+                allOrders = allOrders.filter(order => !ordersToDelete.includes(order.id));
+                closeDeleteModal();
+                applyFilters();
+                alert('تم حذف الطلب(ات) بنجاح');
+            } catch (error) {
+                console.error('Error deleting orders:', error);
+                deleteError.textContent = error.message || 'حدث خطأ أثناء حذف الطلب(ات)';
+            }
+        }
+
+        // تحديث حالة الدفع
+        async function updatePaymentStatus() {
+            if (!currentOrderId) return;
+
+            const isPaid = document.getElementById('isPaidCheckbox').checked;
+            const orderError = document.getElementById('orderError');
+            orderError.textContent = '';
+            try {
+                const response = await fetch(`${apiUrl}${currentOrderId}/`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ is_paid: isPaid })
+                });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || 'فشل تعديل حالة الدفع');
+                }
+                const updatedOrder = await response.json();
+                console.log('تم تعديل حالة الدفع:', updatedOrder);
+                const index = allOrders.findIndex(o => o.id === currentOrderId);
+                if (index !== -1) {
+                    allOrders[index] = updatedOrder;
+                }
+                applyFilters();
+                document.getElementById('orderModal').style.display = 'none';
+                alert('تم تحديث حالة الدفع بنجاح');
+            } catch (error) {
+                console.error('Error updating payment status:', error);
+                orderError.textContent = error.message || 'حدث خطأ أثناء تحديث حالة الدفع';
+            }
+        }
+
+        // تحديد/إلغاء تحديد جميع الطلبات
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('selectAll').checked;
+            document.querySelectorAll('.order-checkbox').forEach(checkbox => {
+                checkbox.checked = selectAll;
+            });
+        }
+
+        // تطبيق الإجراءات الجماعية
+        async function applyBulkAction() {
+            const action = document.getElementById('bulkAction').value;
+            const selectedOrders = Array.from(document.querySelectorAll('.order-checkbox:checked')).map(cb => parseInt(cb.dataset.id));
+            
+            if (selectedOrders.length === 0) {
+                alert('يرجى تحديد طلب واحد على الأقل');
+                return;
+            }
+
+            if (action === '') {
+                alert('يرجى اختيار إجراء');
+                return;
+            }
+
+            if (action === 'delete') {
+                ordersToDelete = selectedOrders;
+                const modal = document.getElementById('deleteModal');
+                const details = document.getElementById('deleteDetails');
+                const deleteError = document.getElementById('deleteError');
+                deleteError.textContent = '';
+                details.innerHTML = selectedOrders.map(id => {
+                    const order = allOrders.find(o => o.id === id);
+                    return `
+                        <p><strong>رقم الطلب:</strong> #${order.id}</p>
+                        <p><strong>اسم العميل:</strong> ${order.full_name}</p>
+                        <p><strong>المنتج:</strong> ${order.product_details.name}</p>
+                        <p><strong>المبلغ:</strong> ${(parseFloat(order.product_details.price) * order.quantity).toFixed(2)} ر.س</p>
+                        <hr>
+                    `;
+                }).join('');
+                modal.style.display = 'block';
+            } else if (action === 'set_paid' || action === 'set_not_paid') {
+                const isPaid = action === 'set_paid';
+                const orderError = document.getElementById('orderError');
+                orderError.textContent = '';
+                try {
+                    for (const orderId of selectedOrders) {
+                        const response = await fetch(`${apiUrl}${orderId}/`, {
+                            method: 'PATCH',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${token}`
+                                },
+                            body: JSON.stringify({ is_paid: isPaid })
+                        });
+                        if (!response.ok) {
+                            const errorData = await response.json();
+                            throw new Error(errorData.detail || `فشل تعديل حالة الدفع للطلب #${orderId}`);
+                        }
+                        const updatedOrder = await response.json();
+                        const index = allOrders.findIndex(o => o.id === orderId);
+                        if (index !== -1) {
+                            allOrders[index] = updatedOrder;
+                        }
+                    }
+                    applyFilters();
+                    alert('تم تحديث حالة الدفع للطلبات المحددة بنجاح');
+                } catch (error) {
+                    console.error('Error updating orders:', error);
+                    orderError.textContent = error.message || 'حدث خطأ أثناء تحديث حالة الدفع';
+                }
+            }
+        }
+
+        // إغلاق نافذة تفاصيل الطلب
+        document.querySelectorAll('.close').forEach(closeBtn => {
+            closeBtn.onclick = () => {
+                document.getElementById('orderModal').style.display = 'none';
+                document.getElementById('deleteModal').style.display = 'none';
+                currentOrderId = null;
+                ordersToDelete = [];
+                document.getElementById('orderError').textContent = '';
+                document.getElementById('deleteError').textContent = '';
+            };
+        });
+
+        // إغلاق النافذة عند النقر خارجها
+        window.onclick = (event) => {
+            const orderModal = document.getElementById('orderModal');
+            const deleteModal = document.getElementById('deleteModal');
+            if (event.target === orderModal) {
+                orderModal.style.display = 'none';
+                currentOrderId = null;
+                document.getElementById('orderError').textContent = '';
+            }
+            if (event.target === deleteModal) {
+                deleteModal.style.display = 'none';
+                ordersToDelete = [];
+                document.getElementById('deleteError').textContent = '';
+            }
+        };
+
+        // أحداث الفلاتر والبحث
+        document.getElementById('searchInput').addEventListener('input', applyFilters);
+        document.getElementById('sortBy').addEventListener('change', applyFilters);
+        document.getElementById('fromDate').addEventListener('change', applyFilters);
+        document.getElementById('toDate').addEventListener('change', applyFilters);
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentPage = 1;
+                applyFilters();
+            });
+        });
+
+        // تحميل الطلبات عند تحميل الصفحة
+        fetchOrders();
+    </script>
+</body>
+</html>
