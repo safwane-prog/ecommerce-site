@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -58,7 +59,7 @@
 
         /* Site Title Banner - Updated */
         .site-title {
-            background-image: url("/static/img/WhatsApp Image 2025-06-11 at 10.13.57_a6abd06f.jpg");
+            background-image: url("{% static 'header.jpg' %}");
             color: white;
             width: 100%;
             padding: 0.5rem 0;
@@ -113,7 +114,7 @@
 
         /* Header Styles - Updated */
         header {
-            background-image: url("/static/img/WhatsApp Image 2025-06-11 at 10.13.57_a6abd06f.jpg");
+            background-image: url("{% static 'header.jpg' %}");
             position: sticky;
             top: 0;
             z-index: 1000;
@@ -487,16 +488,10 @@
             header {
                 padding: 0.5rem 3%;
             }
-
-            .head-nav {
-                flex-direction: column;
-                gap: 1rem;
-            }
-
             .list-pages nav {
                 flex-wrap: wrap;
                 justify-content: center;
-                gap: 0.5rem;
+                gap: 0.1rem;
             }
 
             .logo img {
@@ -516,7 +511,22 @@
                 grid-template-columns: 1fr;
             }
         }
-
+        .list-pages-header{
+            display: none;
+        }
+        .list-pages-header i {
+            font-size:2.5rem;
+            cursor: pointer;
+            color: white;
+        }
+        @media (max-width: 550px){
+            .list-pages{
+                display: none;
+            }
+            .list-pages-header{
+            display: flex;
+            }
+        }
         @media (max-width: 480px) {
             .site-title h1 {
                 font-size: clamp(0.8rem, 2vw, 0.9rem);
@@ -556,6 +566,51 @@
         .about-iamge img{ 
             width: 100%;
         }
+        .page-head-list{
+            display: none;
+            width: 100%;
+            background-image: url("{% static 'header.jpg' %}");
+        }
+        .page-head-list nav{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            width: 100%;
+            height: 60px;
+            margin: 0px auto;
+        }
+        .page-head-list nav a{
+            color: white;
+            text-decoration: none;
+        }
+        .page-head-list nav a {
+    color: #ffffff;
+    font-size: 14px;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius);
+    transition: var(--transition);
+    position: relative;
+}
+
+.page-head-list nav a::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: white;
+    transition: var(--transition);
+    transform: translateX(-50%);
+}
+
+.page-head-list nav a:hover::before {
+    width: 100%;
+}
+
     </style>
 </head>
 <body>
@@ -578,16 +633,52 @@
                     <a href="{% url 'contact' %}">اتصل بنا</a>
                 </nav>
             </div>
+            <div class="list-pages-header">
+                <i class="bi bi-list"></i>
+            </div>
             <div class="logo">
-                <img src="\static\img\WhatsApp Image 2025-06-11 at 19.12.53_2e5dc1c2.jpg" alt="شعار المتجر">
+                <a href="{% url 'home' %}"><img id="store_logo" src="{% static 'admin_image.jpeg' %}" alt="شعار المتجر"></a>
+                
             </div>
         </div>
+        <div class="page-head-list">
+            <nav>
+                <a href="{% url 'home' %}">الصفحة الرئيسية</a>
+                <a href="{% url 'home' %}#category-section">تصنيفاتنا</a>
+                <a href="{% url 'shop' %}">منتجاتنا</a>
+                <a href="{% url 'contact' %}">اتصل بنا</a>
+            </nav>
+        </div>
     </header>
-
+    <script>
+        function header_script() {
+            fetch('/api/store-settings/')
+            .then(response => response.json())
+            .then(data => {
+                if(data.store_name) {
+                    console.log(data.store_name);
+                }
+                if(data.store_logo) {
+                    document.getElementById('store_logo').src = data.store_logo;
+                }else{
+                    document.getElementById('store_logo').src = '{% static "admin_image.png" %}'; // Default logo if not set
+                }
+            })
+        }
+        header_script();
+        document.querySelector('.list-pages-header i').addEventListener('click', function() {
+            const nav = document.querySelector('.page-head-list');
+            if (nav.style.display === 'flex') {
+                nav.style.display = 'none';
+            } else {
+                nav.style.display = 'flex';
+            }
+        });
+    </script>
     {% block content %}
     {% endblock %}
 <section class="about-iamge">
-    <img src="\static\img\a6GSy68VsLybwm5ffPvORt2rOwDWyarWsWDkKfoK.png" alt="">
+    <img src="{% static 'about_image.png' %}" alt="">
 </section>
     <section class="about-section">
         <div class="about-container">
@@ -644,20 +735,17 @@
                 </div>
             </div>
             <div class="foot-content">
-                <div class="foot-title">خدمة العملاء</div>
-                <div class="foot-list">
-                    <a href="#">المساعدة والدعم</a>
-                    <a href="#">سياسة الإرجاع</a>
-                    <a href="#">الشحن والتوصيل</a>
-                    <a href="#">الأسئلة الشائعة</a>
+                <div class="foot-title"> الفئةالمنتجات</div>
+                <div id="foot_list" class="foot-list">
                 </div>
             </div>
+            
             <div class="foot-content">
                 <div class="foot-title">تابعنا</div>
                 <div class="foot-list">
-                    <a id="facebook" href="#"><i class="bi bi-facebook"></i> فيسبوك</a>
-                    <a id="instagram" href="#"><i class="bi bi-instagram"></i> إنستجرام</a>
-                    <a  id="youtube"  href="#"><i class="bi bi-youtube"></i> تويتر</a>
+                    <a  id="facebook" href="#"><i class="bi bi-facebook"></i> فيسبوك</a>
+                    <a  id="instagram" href="#"><i class="bi bi-instagram"></i> إنستجرام</a>
+                    <a  id="youtube"  href="#"><i class="bi bi-youtube"></i> يوتيوب</a>
                     <a  id="whatsapp" href="#"><i class="bi bi-whatsapp"></i> واتساب</a>
                 </div>
             </div>
@@ -666,6 +754,20 @@
     <div class="site_app">
         <a id="whatsapp-link" href=""><i class="bi bi-whatsapp"></i></a>
     </div>
+    <script>
+        fetch('/api/categories/')
+            .then(response => response.json())
+            .then(data => {
+                const footList = document.getElementById('foot_list');
+                data.slice(0, 4).forEach(category => {
+                    const link = document.createElement('a');
+                    link.href = `/products/?category_id=${category.id}`;
+                    link.textContent = category.name;
+                    footList.appendChild(link);
+                });
+            })
+            .catch(error => console.error('Error fetching store settings:', error));
+    </script>
     <style>
         .site_app{
             position: fixed;

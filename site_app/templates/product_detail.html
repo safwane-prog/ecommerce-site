@@ -1412,7 +1412,7 @@ body {
               </div>
               <div class="form-group">
                 <label for="phone" class="form-label">رقم الهاتف</label>
-                <input type="tel" name="phone" id="phone" placeholder="أدخل رقم هاتفك" required class="form-input">
+                <input type="tel" name="phone" id="phone" placeholder="أدخل رقم هاتفك" required class="form-input" style="direction: rtl;">
                 <span class="error-message" id="phone-error">الرجاء إدخال رقم هاتف صالح</span>
               </div>
               <div class="form-group">
@@ -1524,8 +1524,8 @@ body {
 // Get productId from URL
 const urlParts = window.location.pathname.split('/');
 const productId = urlParts[urlParts.length - 2];
-const productUrl = `http://127.0.0.1:8000/api/products/${productId}/`;
-const orderUrl = `http://127.0.0.1:8000/api/orders/`;
+const productUrl = `/api/products/${productId}/`;
+const orderUrl = `/api/orders-free/`;
 
 let currentProduct = null;
 let imageItems = [];
@@ -1716,7 +1716,9 @@ function setMainImage(index) {
   }
   updateGallery();
 }
-
+function safwane(){
+  alert("safwane");
+}
 // Quantity update
 function updateQuantity(change) {
   const quantityInput = document.getElementById('quantity');
@@ -1764,7 +1766,7 @@ function goToHome() {
 }
 
 function continueShopping() {
-  window.location.href = '/products/';
+  window.location.href = '/shop/';
 }
 
 // Social Sharing

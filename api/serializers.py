@@ -57,12 +57,33 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 
-# serializers.py
+from rest_framework import serializers
+from .models import ProductOrder, Product, Color, Size
+
+from rest_framework import serializers
+from .models import ProductOrder, Product, Color, Size
+
 class OrderSerializer(serializers.ModelSerializer):
+    product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all())
+    color = serializers.PrimaryKeyRelatedField(queryset=Color.objects.all())
+    size = serializers.PrimaryKeyRelatedField(queryset=Size.objects.all())
+    full_name = serializers.CharField(max_length=100)
+    phone = serializers.CharField(max_length=20)
+    address = serializers.CharField()
+    quantity = serializers.IntegerField()
+    is_paid = serializers.BooleanField(required=False)
+
     class Meta:
         model = ProductOrder
         fields = '__all__'
-# products/serializers.py
+
+from rest_framework import serializers
+from .models import ProductOrder, Product, Color, Size
+
+class ProductOrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductOrder
+        fields = '__all__'
 
 
 class BestSellingProductSerializer(serializers.ModelSerializer):
@@ -133,10 +154,14 @@ class AdminProfileSerializer(serializers.ModelSerializer):
             'id',
             'admin_name',
             'profile_image',
-            'phone_number',
-            'address',
-            'position',
-            'bio',
             'created_at',
             'updated_at'
         ]
+# serializers.py
+
+from .models import Notification
+
+class NotificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notification
+        fields = '__all__'

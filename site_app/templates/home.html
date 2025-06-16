@@ -559,7 +559,7 @@
 <section class="hero-section">
     <div class="hero-slideshow">
         <div class="hero-slide active">
-            <img src="\static\img\hero_1.jpg" alt="عرض حصري على منتجاتنا">
+            <img src="{% static 'hero_image.jpg' %}" alt="عرض حصري على منتجاتنا">
         </div>
     </div>
 </section>
@@ -573,7 +573,6 @@
         <!-- Categories will be populated by JavaScript -->
     </div>
 </section>
-
 <section class="products-section">
     <div class="section-title">
         <h2>المنتجات من اختيارك</h2>
@@ -668,7 +667,6 @@
             updateCarouselButtons();
         }).catch(error => {
             console.error('Error loading data:', error);
-            showErrorToast('حدث خطأ في تحميل البيانات. يرجى المحاولة لاحقًا.');
         });
 
         async function fetchProducts() {
@@ -761,7 +759,7 @@
             container.innerHTML = categories.map(category => `
                 <div class="category-item" onclick="viewCategory(${category.id})" aria-label="تصنيف ${category.name}">
                     <div class="category-img">
-                        <img src="${category.image || '/static/img/default-category.png'}" alt="${category.name}" loading="lazy">
+                        <img src="${category.image || '{% static "admin_image.jpeg" %}'}" alt="${category.name}" loading="lazy">
                     </div>
                     <div class="category-name">${category.name}</div>
                 </div>

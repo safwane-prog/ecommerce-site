@@ -15,9 +15,12 @@ router.register(r'admin-profile', AdminProfileViewSet, basename='AdminProfileVie
 urlpatterns = [
     path('', include(router.urls)),
     path('orders/', OrderCreateAPIView.as_view(), name='orders_2'),
+    path('orders-free/', ProductOrderAPIView.as_view(), name='product-order'),
     path('best-selling/', BestSellingProductsAPIView.as_view(), name='best-selling-products'),
     path('contact/', ContactCreateAPIView.as_view(), name='contact-api'),
     path('contact-info/', AdminContactInfoView.as_view(), name='contact-info'),
     path('dashboard-full-stats/', AdvancedDashboardStatsAPIView.as_view(), name='dashboard-full-stats'),
     path('store-settings/', StoreSettingsRetrieveUpdateView.as_view(), name='store-settings'),
+    path('notifications/', NotificationListView.as_view()),
+    path('notifications/delete-all/', NotificationDeleteAllView.as_view()),
 ]

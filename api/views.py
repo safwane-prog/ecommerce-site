@@ -51,13 +51,23 @@ class CategoryViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
 
 @method_decorator(csrf_exempt, name='dispatch')
-class OrderCreateAPIView(generics.CreateAPIView):
+class OrderCreateAPIView(generics.ListCreateAPIView):
     queryset = ProductOrder.objects.all()
     serializer_class = OrderSerializer
     permission_classes = [AllowAny]
 
+
 from rest_framework.views import APIView
 from django.db.models import Count
+from rest_framework import generics
+from rest_framework.permissions import AllowAny
+from .models import ProductOrder
+from .serializers import ProductOrderSerializer
+@method_decorator(csrf_exempt, name='dispatch')
+class ProductOrderAPIView(generics.ListCreateAPIView):
+    queryset = ProductOrder.objects.all()
+    serializer_class = ProductOrderSerializer
+    permission_classes = [AllowAny]
 
 class BestSellingProductsAPIView(APIView):
     def get(self, request):
@@ -97,10 +107,17 @@ class AdminContactInfoView(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@method_decorator(csrf_exempt, name='dispatch')
+from rest_framework.authentication import SessionAuthentication
+
+class CsrfExemptSessionAuthentication(SessionAuthentication):
+    def enforce_csrf(self, request):
+        return  # ببساطة نتجاهل CSRF بالكامل
+
+# ثم داخل ViewSet:
 class ProductOrderViewSet(viewsets.ModelViewSet):
     queryset = ProductOrder.objects.all()
     serializer_class = OrderSerializer
+    authentication_classes = (CsrfExemptSessionAuthentication,)
     permission_classes = [AllowAny]
 
     def partial_update(self, request, *args, **kwargs):
@@ -113,6 +130,7 @@ class ProductOrderViewSet(viewsets.ModelViewSet):
         instance.save()
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
+
 
 from rest_framework.views import APIView
 from django.utils import timezone
@@ -306,3 +324,26 @@ class AdminProfileViewSet(viewsets.ModelViewSet):
     queryset = AdminProfile.objects.all()
     serializer_class = AdminProfileSerializer
     permission_classes = [AllowAny]
+
+
+from rest_framework import generics
+from .models import Notification
+from .serializers import NotificationSerializer
+
+class NotificationListView(generics.ListAPIView):
+    queryset = Notification.objects.all().order_by('-created_at')
+    serializer_class = NotificationSerializer
+
+
+
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.views import APIView
+
+@method_decorator(csrf_exempt, name='dispatch')
+class NotificationDeleteAllView(APIView):
+    authentication_classes = []
+    permission_classes = []
+    def delete(self, request, *args, **kwargs):
+        Notification.objects.all().delete()
+        return Response({"message": "تم حذف جميع الإشعارات."}, status=204)

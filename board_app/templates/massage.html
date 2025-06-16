@@ -4,10 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>رسائل التواصل - لوحة التحكم</title>
-    <link rel="stylesheet" href="\static\dashboard.css">
+    <link rel="stylesheet" href="/static/dashboard.css">
+    <link rel="stylesheet" href="/static/order.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<style>
-    /* إعادة تعيين CSS الأساسي */
+        <style>
+/* إعادة تعيين CSS الأساسي */
 * {
     margin: 0;
     padding: 0;
@@ -19,13 +20,19 @@
     --primary-color: #2563eb;
     --primary-dark: #1d4ed8;
     --secondary-color: #64748b;
+    --accent-color: #4895ef;
     --success-color: #10b981;
     --warning-color: #f59e0b;
     --danger-color: #ef4444;
+    --info-color: #43aa8b;
+    --light-color: #f8f9fa;
+    --dark-color: #212529;
     --background-color: #f8fafc;
     --sidebar-bg: #1e293b;
     --sidebar-hover: #334155;
+    --sidebar-active: #4361ee;
     --white: #ffffff;
+    --gray-50: #f9fafc;
     --gray-100: #f1f5f9;
     --gray-200: #e2e8f0;
     --gray-300: #cbd5e1;
@@ -41,6 +48,321 @@
     --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
     --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
     --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+body {
+    font-family: 'Tajawal', 'Segoe UI', sans-serif;
+    background-color: #f5f7fb;
+    color: #333;
+    line-height: 1.6;
+}
+
+.dashboard {
+    display: flex;
+    min-height: 100vh;
+    background-color: #f5f7fb;
+}
+
+/* الشريط الجانبي */
+.sidebar {
+    width: 280px;
+    background: var(--sidebar-bg);
+    color: var(--white);
+    height: 100vh;
+    position: fixed;
+    transition: var(--transition);
+    box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.sidebar:hover {
+    box-shadow: 2px 0 20px rgba(0, 0, 0, 0.15);
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    padding: 1.5rem;
+    background: rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logo i {
+    font-size: 1.8rem;
+    margin-left: 0.8rem;
+    color: var(--accent-color);
+}
+
+.logo span {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--white);
+}
+
+.menu {
+    list-style: none;
+    padding: 1.5rem 0;
+}
+
+.menu li {
+    margin-bottom: 0.3rem;
+    position: relative;
+}
+
+.menu li a {
+    display: flex;
+    align-items: center;
+    padding: 0.9rem 1.5rem;
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    transition: var(--transition);
+    font-size: 0.95rem;
+    border-right: 3px solid transparent;
+}
+
+.menu li a:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--white);
+    border-right-color: var(--accent-color);
+}
+
+.menu li a i {
+    margin-left: 0.8rem;
+    font-size: 1.2rem;
+    width: 24px;
+    text-align: center;
+}
+
+.menu li.active a {
+    background: linear-gradient(90deg, rgba(67, 97, 238, 0.2), transparent);
+    color: var(--white);
+    border-right-color: var(--primary-color);
+}
+
+.menu li.active a::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 3px;
+    background: var(--primary-color);
+}
+
+/* المحتوى الرئيسي */
+.main-content {
+    flex: 1;
+    margin-right: 280px;
+    padding: 2rem;
+    transition: var(--transition);
+}
+
+/* شريط العنوان */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    background: var(--white);
+    padding: 1.2rem 2rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow);
+    transition: var(--transition);
+}
+
+.header:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.search {
+    display: flex;
+    align-items: center;
+    background-color: var(--gray-100);
+    padding: 0.6rem 1.2rem;
+    border-radius: 50px;
+    width: 320px;
+    transition: var(--transition);
+}
+
+.search:hover {
+    background-color: #e9ecef;
+}
+
+.search i {
+    color: var(--gray-500);
+    margin-left: 0.8rem;
+    font-size: 1.1rem;
+}
+
+.search input {
+    border: none;
+    background: transparent;
+    width: 100%;
+    outline: none;
+    font-size: 0.95rem;
+    color: var(--gray-700);
+}
+
+.user-area {
+    display: flex;
+    align-items: center;
+}
+
+.notifications {
+    position: relative;
+    margin-left: 1.5rem;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.notifications:hover {
+    transform: translateY(-2px);
+}
+
+.notifications i {
+    font-size: 1.3rem;
+    color: var(--gray-500);
+}
+
+.badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background-color: var(--danger-color);
+    color: var(--white);
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.user {
+    display: flex;
+    align-items: center;
+    margin-right: 1rem;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.user:hover {
+    transform: translateY(-2px);
+}
+
+.user img {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    margin-left: 0.8rem;
+    object-fit: cover;
+    border: 2px solid #e9ecef;
+    transition: var(--transition);
+}
+
+.user:hover img {
+    border-color: var(--primary-color);
+}
+
+.user span {
+    font-weight: 600;
+    color: var(--dark-color);
+}
+
+/* بطاقات الإحصائيات */
+.stats-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.card {
+    background: var(--white);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    box-shadow: var(--card-shadow);
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--primary-color);
+    transition: var(--transition);
+}
+
+.card:hover::before {
+    width: 6px;
+}
+
+.card-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: var(--border-radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 1rem;
+    font-size: 1.5rem;
+    color: var(--white);
+    flex-shrink: 0;
+    transition: var(--transition);
+}
+
+.card:hover .card-icon {
+    transform: scale(1.1);
+}
+
+.bg-blue {
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+}
+
+.bg-green {
+    background: linear-gradient(135deg, var(--info-color), #4cc9f0);
+}
+
+.bg-orange {
+    background: linear-gradient(135deg, var(--warning-color), #f3722c);
+}
+
+.bg-red {
+    background: linear-gradient(135deg, var(--danger-color), #f72585);
+}
+
+.card-info {
+    flex: 1;
+}
+
+.card-info h3 {
+    font-size: 0.95rem;
+    color: var(--gray-500);
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.card-info p {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--dark-color);
 }
 
 /* حاوية الرسائل */
@@ -93,7 +415,7 @@
     color: var(--gray-600);
     border-radius: calc(var(--border-radius) - 4px);
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: var(--transition);
     font-weight: 500;
     position: relative;
     overflow: hidden;
@@ -123,6 +445,10 @@
     box-shadow: var(--shadow);
 }
 
+.filter-btn:active {
+    transform: translateY(0) scale(0.95);
+}
+
 /* قائمة الرسائل */
 .message-list {
     list-style: none;
@@ -137,9 +463,10 @@
     padding: 1.5rem;
     border-bottom: 1px solid var(--gray-100);
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: var(--transition);
     position: relative;
     background: var(--white);
+    animation: fadeInUp 0.5s ease forwards;
 }
 
 .message-item::before {
@@ -161,6 +488,10 @@
 .message-item:hover {
     transform: translateX(-5px);
     box-shadow: var(--shadow-md);
+}
+
+.message-item:active {
+    transform: translateX(-3px) scale(0.98);
 }
 
 .message-item:last-child {
@@ -214,6 +545,11 @@
     font-size: 1rem;
     position: relative;
     z-index: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
 }
 
 .message-content {
@@ -222,6 +558,11 @@
     margin-bottom: 1rem;
     position: relative;
     z-index: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
 }
 
 .message-actions {
@@ -236,27 +577,26 @@
 .action-btn {
     display: flex;
     align-items: center;
+    flex-direction: row;
     gap: 0.5rem;
     padding: 0.5rem 1rem;
     border: none;
     border-radius: calc(var(--border-radius) - 4px);
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: var(--transition);
     font-weight: 500;
     font-size: 0.9rem;
     position: relative;
     overflow: hidden;
 }
 
-.action-btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 0;
-    height: 100%;
-    transition: width 0.3s ease;
-    z-index: -1;
+.action-btn i {
+    font-size: 0.8rem;
+    margin-right: 0.3rem;
+}
+
+.action-btn:active {
+    transform: translateY(0) scale(0.95);
 }
 
 .reply-btn {
@@ -265,7 +605,15 @@
 }
 
 .reply-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 0;
+    height: 100%;
     background: linear-gradient(135deg, var(--success-color), #059669);
+    transition: width 0.3s ease;
+    z-index: -1;
 }
 
 .reply-btn:hover::before {
@@ -279,12 +627,20 @@
 }
 
 .delete-btn {
-    background: var(--gray-100);
-    color: var(--gray-700);
+    background: var(--danger-color);
+    color: rgb(255, 255, 255);
 }
 
 .delete-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 0;
+    height: 100%;
     background: linear-gradient(135deg, var(--danger-color), #dc2626);
+    transition: width 0.3s ease;
+    z-index: -1;
 }
 
 .delete-btn:hover::before {
@@ -297,25 +653,49 @@
     box-shadow: var(--shadow);
 }
 
+.action-btn.view {
+    background-color: var(--primary-color);
+    color: var(--white);
+}
+
+.action-btn.view:hover {
+    background-color: var(--primary-dark);
+}
+
+.action-btn.print {
+    background-color: var(--gray-500);
+    color: var(--white);
+}
+
+.action-btn.print:hover {
+    background-color: #5a6268;
+}
+
+.action-btn.delete {
+    background: #d9534f;
+    color: var(--white);
+}
+
+.action-btn.delete:hover {
+    background: #c9302c;
+}
+
 /* النافذة المنبثقة */
-.message-modal {
+.message-modal, .modal {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(5px);
     display: flex;
-    align-items: center;
     justify-content: center;
-    z-index: 2000;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.5); /* خلفية شفافة اختيارية */
+    z-index: 9999;
+    display: none;
 }
 
-.message-modal.active {
+.message-modal.active, .modal.active {
     opacity: 1;
     visibility: visible;
 }
@@ -330,10 +710,13 @@
     box-shadow: var(--shadow-xl);
     border: 1px solid var(--gray-200);
     transform: scale(0.9) translateY(20px);
-    transition: all 0.3s ease;
+    transition: var(--transition);
+    padding: 20px;
 }
 
-.message-modal.active .modal-content {
+
+
+.message-modal.active .modal-content, .modal.active .modal-content {
     transform: scale(1) translateY(0);
 }
 
@@ -350,21 +733,22 @@
     color: var(--gray-800);
     font-size: 1.5rem;
     font-weight: 700;
+    margin: 0;
 }
 
-.close-modal {
+.close-modal, .close {
     background: none;
     border: none;
     font-size: 2rem;
     color: var(--gray-400);
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: var(--transition);
     padding: 0.25rem;
     border-radius: 50%;
     line-height: 1;
 }
 
-.close-modal:hover {
+.close-modal:hover, .close:hover {
     color: var(--danger-color);
     background: var(--gray-100);
     transform: rotate(90deg);
@@ -429,6 +813,42 @@
     background: var(--gray-50);
 }
 
+.modal-content .details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.modal-content img {
+    max-width: 100%;
+    border-radius: 4px;
+    margin-top: 10px;
+}
+
+.modal-content .actions {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.modal-content .actions button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.modal-content .actions button.confirm {
+    background: #d9534f;
+    color: var(--white);
+}
+
+.modal-content .actions button.cancel {
+    background: var(--gray-500);
+    color: var(--white);
+}
+
 /* ترقيم الصفحات */
 .pagination {
     display: flex;
@@ -443,7 +863,7 @@
     display: flex;
 }
 
-.page-link {
+.page-link, .page-btn {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -453,12 +873,13 @@
     color: var(--gray-700);
     text-decoration: none;
     border-radius: calc(var(--border-radius) - 4px);
-    transition: all 0.3s ease;
+    transition: var(--transition);
     font-weight: 500;
     min-width: 44px;
+    cursor: pointer;
 }
 
-.page-link:hover {
+.page-link:hover, .page-btn:hover {
     background: var(--primary-color);
     color: var(--white);
     border-color: var(--primary-color);
@@ -466,28 +887,542 @@
     box-shadow: var(--shadow);
 }
 
-.page-item.active .page-link {
+.page-item.active .page-link, .page-btn.active {
     background: var(--primary-color);
     color: var(--white);
     border-color: var(--primary-color);
     box-shadow: var(--shadow);
 }
 
-.page-item.disabled .page-link {
+.page-item.disabled .page-link, .page-btn:disabled {
     background: var(--gray-100);
     color: var(--gray-400);
     cursor: not-allowed;
     border-color: var(--gray-200);
 }
 
-.page-item.disabled .page-link:hover {
+.page-item.disabled .page-link:hover, .page-btn:disabled:hover {
     transform: none;
     box-shadow: none;
     background: var(--gray-100);
     color: var(--gray-400);
 }
 
-/* الاستجابة للأجهزة المحمولة */
+/* الرسوم البيانية */
+.charts-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.chart-container {
+    background: var(--white);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: var(--card-shadow);
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+}
+
+.chart-container:hover {
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    transform: translateY(-3px);
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.2rem;
+}
+
+.chart-header h2 {
+    font-size: 1.1rem;
+    color: var(--dark-color);
+    font-weight: 600;
+    margin: 0;
+    text-align: center;
+    position: relative;
+    padding-bottom: 0.8rem;
+}
+
+.chart-header h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: var(--primary-color);
+    border-radius: 3px;
+}
+
+.time-filters {
+    display: flex;
+    background: var(--gray-50);
+    border-radius: 8px;
+    padding: 4px;
+}
+
+.time-filter {
+    border: none;
+    background: transparent;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.time-filter.active {
+    background: var(--white);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-weight: 500;
+    color: var(--primary-color);
+}
+
+.time-filter:hover:not(.active) {
+    color: var(--primary-color);
+}
+
+.chart-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    font-size: 0.8rem;
+    color: var(--gray-500);
+}
+
+.legend-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    margin-left: 0.4rem;
+}
+
+canvas {
+    width: 100% !important;
+    height: 250px !important;
+    margin: 0.5rem 0;
+    transition: var(--transition);
+}
+
+canvas:hover {
+    transform: scale(1.01);
+}
+
+.chart-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 1rem;
+    background: var(--gray-50);
+    border-radius: 10px;
+    padding: 1rem;
+}
+
+.summary-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.summary-item .label {
+    font-size: 0.75rem;
+    color: var(--gray-500);
+    margin-bottom: 0.3rem;
+}
+
+.summary-item .value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--dark-color);
+}
+
+.chart-footer {
+    display: flex;
+    align-items: center;
+    margin-top: 0.8rem;
+    font-size: 0.75rem;
+    color: var(--gray-500);
+}
+
+.chart-footer i {
+    margin-left: 0.4rem;
+    font-size: 0.9rem;
+}
+
+.status-details {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+}
+
+.status-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-bottom: 0.4rem;
+}
+
+.status-dot.completed {
+    background: #28a745;
+}
+
+.status-dot.pending {
+    background: #ffc107;
+}
+
+.status-dot.canceled {
+    background: #dc3545;
+}
+
+.status-label {
+    font-size: 0.7rem;
+    color: var(--gray-500);
+    margin-bottom: 0.2rem;
+}
+
+.status-value {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--dark-color);
+}
+
+.color-filters select {
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 0.3rem 0.6rem;
+    font-size: 0.8rem;
+    background: var(--white);
+    color: var(--gray-700);
+    cursor: pointer;
+    outline: none;
+}
+
+/* جدول الطلبات */
+.recent-orders, .orders-table {
+    background: var(--white);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: var(--card-shadow);
+    transition: var(--transition);
+    overflow: hidden;
+}
+
+.recent-orders:hover, .orders-table:hover {
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.recent-orders h2, .orders-table h2 {
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+    color: var(--dark-color);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+}
+
+.recent-orders h2 i {
+    margin-left: 0.8rem;
+    color: var(--primary-color);
+}
+
+.table-wrapper, .orders-table {
+    overflow-x: auto;
+}
+
+table, .orders-table table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 600px;
+}
+
+th, td, .orders-table th, .orders-table td {
+    padding: 1rem 1.2rem;
+    text-align: right;
+    border-bottom: 1px solid #eee;
+    transition: var(--transition);
+}
+
+th, .orders-table th {
+    background-color: var(--light-color);
+    color: var(--gray-700);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+}
+
+tr:hover td {
+    background-color: var(--light-color);
+}
+
+.status {
+    display: inline-block;
+    padding: 0.4rem 0.8rem;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-align: center;
+    min-width: 90px;
+}
+
+.status.completed {
+    background-color: rgba(40, 167, 69, 0.1);
+    color: #28a745;
+}
+
+.status.shipped {
+    background-color: rgba(23, 162, 184, 0.1);
+    color: #17a2b8;
+}
+
+.status.pending {
+    background-color: rgba(255, 193, 7, 0.1);
+    color: #ffc107;
+}
+
+.status.canceled {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+}
+
+.status.processing {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.is-paid {
+    color: #5cb85c;
+    font-weight: bold;
+}
+
+.not-paid, .not-read, .error-message {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+.is-read {
+    color: #28a745;
+    font-weight: bold;
+}
+
+/* أدوات التحكم بالطلبات */
+.orders-controls {
+    background-color: var(--white);
+    margin: 20px;
+    padding: 20px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+}
+
+.orders-controls h2 {
+    margin-bottom: 20px;
+    color: var(--dark-color);
+}
+
+.controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.tabs {
+    display: flex;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.tab-btn {
+    padding: 8px 15px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--gray-400);
+    position: relative;
+    margin-left: 5px;
+    transition: var(--transition);
+}
+
+.tab-btn.active {
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+.tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    right: 0;
+    width: 100%;
+    height: 2px;
+    background-color: var(--primary-color);
+}
+
+.tab-btn:hover {
+    color: var(--primary-color);
+}
+
+.filters {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.filters select,
+.filters input[type="date"] {
+    padding: 8px 15px;
+    border-radius: 4px;
+    border: 1px solid var(--gray-200);
+    margin-right: 10px;
+    background-color: var(--white);
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.filters input[type="date"] {
+    width: 150px;
+}
+
+.bulk-actions {
+    margin: 10px 0;
+    display: flex;
+    gap: 10px;
+}
+
+.bulk-actions select, .bulk-actions button {
+    padding: 8px;
+    border-radius: 4px;
+}
+
+.bulk-actions button {
+    background: var(--primary-color);
+    color: var(--white);
+    border: none;
+    cursor: pointer;
+}
+
+.bulk-actions button:hover {
+    background: var(--primary-dark);
+}
+
+/* تحسينات التركيز */
+.filter-btn:focus, .action-btn:focus, .page-link:focus, .search input:focus, .page-btn:focus {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+/* تحسين شريط التمرير */
+.modal-content::-webkit-scrollbar, .message-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-content::-webkit-scrollbar-track, .message-list::-webkit-scrollbar-track {
+    background: var(--gray-100);
+    border-radius: 4px;
+}
+
+.modal-content::-webkit-scrollbar-thumb, .message-list::-webkit-scrollbar-thumb {
+    background: var(--gray-300);
+    border-radius: 4px;
+    transition: background 0.3s ease;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover, .message-list::-webkit-scrollbar-thumb:hover {
+    background: var(--gray-400);
+}
+
+/* تأثيرات الحركة */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(30px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+.card, .chart-container, .recent-orders, .orders-table {
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+.card:nth-child(1) { animation-delay: 0.1s; }
+.card:nth-child(2) { animation-delay: 0.2s; }
+.card:nth-child(3) { animation-delay: 0.3s; }
+.card:nth-child(4) { animation-delay: 0.4s; }
+.chart-container:nth-child(1) { animation-delay: 0.2s; }
+.chart-container:nth-child(2) { animation-delay: 0.3s; }
+.recent-orders, .orders-table { animation-delay: 0.4s; }
+
+.message-filters .filter-btn {
+    animation: slideInRight 0.3s ease forwards;
+}
+
+.message-filters .filter-btn:nth-child(1) { animation-delay: 0.1s; }
+.message-filters .filter-btn:nth-child(2) { animation-delay: 0.2s; }
+.message-filters .filter-btn:nth-child(3) { animation-delay: 0.3s; }
+
+/* التكيف مع الشاشات المختلفة */
+@media (max-width: 1200px) {
+    .sidebar {
+        width: 90px;
+    }
+    
+    .sidebar .logo span, .menu li a span {
+        display: none;
+    }
+    
+    .menu li a {
+        justify-content: center;
+        padding: 1rem 0;
+    }
+    
+    .menu li a i {
+        margin-left: 0;
+        font-size: 1.3rem;
+    }
+    
+    .main-content {
+        margin-right: 90px;
+    }
+    
+    .menu li.active a::before {
+        width: 100%;
+        height: 3px;
+        top: auto;
+        bottom: 0;
+    }
+}
+
 @media (max-width: 1024px) {
     .sidebar {
         width: 260px;
@@ -502,11 +1437,52 @@
     }
 }
 
+@media (max-width: 992px) {
+    .charts-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .search {
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+    
+    .user-area {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .controls {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .tabs {
+        margin-bottom: 15px;
+        width: 100%;
+    }
+    
+    .filters {
+        width: 100%;
+        margin-top: 15px;
+    }
+    
+    .filters select, .filters input[type="date"] {
+        width: 100%;
+        margin: 5px 0;
+    }
+}
+
 @media (max-width: 768px) {
     .sidebar {
         width: 100%;
         transform: translateX(100%);
-        transition: transform 0.3s ease;
+        transition: var(--transition);
     }
     
     .sidebar.active {
@@ -556,14 +1532,103 @@
         margin: 1rem;
     }
     
-    .modal-header,
-    .modal-body,
-    .modal-footer {
+    .modal-header, .modal-body, .modal-footer {
         padding: 1rem;
     }
     
     .pagination {
         flex-wrap: wrap;
+    }
+    
+    .stats-cards {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .user img {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .user span {
+        font-size: 0.9rem;
+    }
+    
+    .charts-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .chart-summary {
+        grid-template-columns: 1fr;
+    }
+    
+    .status-details {
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+    
+    .status-item {
+        flex-direction: row;
+        gap: 0.5rem;
+        align-items: center;
+    }
+    
+    .status-dot {
+        margin-bottom: 0;
+    }
+    
+    .orders-table th, .orders-table td {
+        padding: 8px 5px;
+        font-size: 14px;
+    }
+    
+    .status {
+        font-size: 10px;
+        padding: 3px 6px;
+    }
+    
+    .action-btn {
+        width: 25px;
+        height: 25px;
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 576px) {
+    .stats-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .sidebar {
+        transform: translateX(-100%);
+        z-index: 1000;
+    }
+    
+    .main-content {
+        margin-right: 0;
+        padding: 1rem;
+    }
+    
+    .sidebar.active {
+        transform: translateX(0);
+    }
+    
+    .menu-toggle {
+        display: block;
+        position: fixed;
+        top: 1rem;
+        right: 1rem;
+        z-index: 1001;
+        background: var(--primary-color);
+        color: var(--white);
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        cursor: pointer;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
     }
 }
 
@@ -592,112 +1657,27 @@
         border-radius: 0;
         margin: 0;
     }
-}
-
-/* تأثيرات الحركة المتقدمة */
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
+    
+    .tab-btn {
+        padding: 5px 8px;
+        font-size: 12px;
+        margin-left: 3px;
     }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes slideInRight {
-    from {
-        opacity: 0;
-        transform: translateX(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
+    
+    .page-btn {
+        width: 30px;
+        height: 30px;
+        font-size: 12px;
     }
 }
-
-.message-item {
-    animation: fadeInUp 0.5s ease forwards;
+#messageActions{
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    gap: 10px;
+    flex-direction: row !important;
 }
-
-.message-filters .filter-btn {
-    animation: slideInRight 0.3s ease forwards;
-}
-
-.message-filters .filter-btn:nth-child(1) { animation-delay: 0.1s; }
-.message-filters .filter-btn:nth-child(2) { animation-delay: 0.2s; }
-.message-filters .filter-btn:nth-child(3) { animation-delay: 0.3s; }
-
-/* تحسينات إضافية للتفاعل */
-.message-item:active {
-    transform: translateX(-3px) scale(0.98);
-}
-
-.action-btn:active {
-    transform: translateY(0) scale(0.95);
-}
-
-.filter-btn:active {
-    transform: translateY(0) scale(0.95);
-}
-
-/* تحسين شريط التمرير المخصص */
-.modal-content::-webkit-scrollbar,
-.message-list::-webkit-scrollbar {
-    width: 8px;
-}
-
-.modal-content::-webkit-scrollbar-track,
-.message-list::-webkit-scrollbar-track {
-    background: var(--gray-100);
-    border-radius: 4px;
-}
-
-.modal-content::-webkit-scrollbar-thumb,
-.message-list::-webkit-scrollbar-thumb {
-    background: var(--gray-300);
-    border-radius: 4px;
-    transition: background 0.3s ease;
-}
-
-.modal-content::-webkit-scrollbar-thumb:hover,
-.message-list::-webkit-scrollbar-thumb:hover {
-    background: var(--gray-400);
-}
-
-/* تحسينات التركيز للوصول */
-.filter-btn:focus,
-.action-btn:focus,
-.page-link:focus,
-.search input:focus {
-    outline: 2px solid var(--primary-color);
-    outline-offset: 2px;
-}
-
-/* تأثيرات إضافية للعناصر التفاعلية */
-.notifications:active {
-    transform: scale(0.95);
-}
-
-.user:active {
-    transform: scale(0.98);
-}
-
-/* تحسين عرض النصوص الطويلة */
-.message-content,
-.message-subject {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-}
-
-.message-subject {
-    -webkit-line-clamp: 1;
-}
-</style>
+    </style>
 </head>
 <body>
     <div class="dashboard">
@@ -747,117 +1727,76 @@
             <div class="header">
                 <div class="search">
                     <i class="fas fa-search"></i>
-                    <input type="text" id="searchInput" placeholder="ابحث هنا...">
+                    <input type="text" id="searchInput" placeholder="ابحث عن رسالة (الاسم، الموضوع)...">
                 </div>
-                <div class="user-area">
-                    <div class="notifications">
-                        <i class="fas fa-bell"></i>
-                        <span class="badge">3</span>
-                    </div>
-                    <div class="user">
-                        <img src="https://via.placeholder.com/150" alt="صورة المستخدم">
-                        <span>مدير المتجر</span>
+                {% include 'admin.html' %}
+            </div>
+
+            <!-- أدوات التحكم بالرسائل -->
+            <div class="orders-controls">
+                <h2>رسائل التواصل</h2>
+                <div class="controls">
+                    <div class="tabs">
+                        <button class="tab-btn active" data-filter="all">الكل (<span id="totalMessages">0</span>)</button>
+                        <button class="tab-btn" data-filter="unread">غير المقروءة (<span id="unreadMessages">0</span>)</button>
                     </div>
                 </div>
             </div>
 
-            <!-- محتوى الرسائل -->
-            <div class="messages-container">
-                <div class="messages-header">
-                    <h2>
-                        <i class="fas fa-envelope"></i>
-                        رسائل التواصل
-                    </h2>
-                    <div class="message-filters">
-                        <button class="filter-btn active" data-filter="all">
-                            <span>الكل</span>
-                            <i class="fas fa-inbox"></i>
-                        </button>
-                        <button class="filter-btn" data-filter="unread">
-                            <span>غير المقروءة</span>
-                            <i class="fas fa-envelope"></i>
-                        </button>
-                        <button class="filter-btn" data-filter="important">
-                            <span>المهمة</span>
-                            <i class="fas fa-star"></i>
-                        </button>
-                    </div>
-                </div>
+            <!-- جدول الرسائل -->
+            <div class="orders-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>الاسم</th>
+                            <th>البريد الإلكتروني</th>
+                            <th>الموضوع</th>
+                            <th>تاريخ الإرسال</th>
+                            <th>الحالة</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="messagesBody"></tbody>
+                </table>
 
-                <ul class="message-list" id="messagesList">
-                    <!-- سيتم ملء هذه القائمة عبر JavaScript -->
-                </ul>
-
-                <!-- Pagination -->
-                <div class="pagination" id="pagination">
-                    <!-- سيتم ملء هذا الجزء عبر JavaScript -->
-                </div>
+                <!-- الترقيم الصفحي -->
+                <div class="pagination" id="pagination"></div>
             </div>
         </div>
 
-        <!-- نافذة عرض الرسالة -->
-        <div class="message-modal" id="messageModal">
+        <!-- نافذة تفاصيل الرسالة -->
+        <div id="messageModal" class="modal">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h3>تفاصيل الرسالة</h3>
-                    <button class="close-modal" id="closeModal">&times;</button>
+                <span class="close">×</span>
+                <h3>تفاصيل الرسالة</h3>
+                <div class="details-grid" id="messageDetails">
+                    <p><strong>الاسم الكامل:</strong> <span id="modalFullName">-</span></p>
+                    <p><strong>البريد الإلكتروني:</strong> <span id="modalEmail">-</span></p>
+                    <p><strong>الموضوع:</strong> <span id="modalSubject">-</span></p>
+                    <p><strong>تاريخ الإرسال:</strong> <span id="modalDate">-</span></p>
+                    <p><strong>نص الرسالة:</strong> <span id="modalMessage">-</span></p>
                 </div>
-                <div class="modal-body">
-                    <div class="modal-message-info">
-                        <div class="info-item">
-                            <h4>الاسم الكامل:</h4>
-                            <p id="modalFullName">-</p>
-                        </div>
-                        <div class="info-item">
-                            <h4>البريد الإلكتروني:</h4>
-                            <p id="modalEmail">-</p>
-                        </div>
-                        <div class="info-item">
-                            <h4>الموضوع:</h4>
-                            <p id="modalSubject">-</p>
-                        </div>
-                        <div class="info-item">
-                            <h4>تاريخ الإرسال:</h4>
-                            <p id="modalDate">-</p>
-                        </div>
-                    </div>
-                    <div class="modal-message-content">
-                        <h4>نص الرسالة:</h4>
-                        <p id="modalMessage">-</p>
-                    </div>
-                </div>
-                <div class="modal-footer">
+                <div class="actions">
                     <button class="action-btn delete-btn" id="deleteMessageBtn">
                         <span>حذف</span>
                         <i class="fas fa-trash"></i>
                     </button>
-                    <button class="action-btn reply-btn" id="replyMessageBtn">
-                        <span>رد</span>
-                        <i class="fas fa-reply"></i>
-                    </button>
                 </div>
+                <div id="messageError" class="error-message"></div>
             </div>
         </div>
     </div>
 
-<script>
-    // عناصر DOM
-    const messagesList = document.getElementById('messagesList');
-    const messageModal = document.getElementById('messageModal');
-    const closeModal = document.getElementById('closeModal');
-    const modalFullName = document.getElementById('modalFullName');
-    const modalEmail = document.getElementById('modalEmail');
-    const modalSubject = document.getElementById('modalSubject');
-    const modalDate = document.getElementById('modalDate');
-    const modalMessage = document.getElementById('modalMessage');
-    const deleteMessageBtn = document.getElementById('deleteMessageBtn');
-    const replyMessageBtn = document.getElementById('replyMessageBtn');
-    const filterButtons = document.querySelectorAll('.filter-btn');
+    <script>
+        const apiUrl = '/api/contact-view/';
+        const messagesPerPage = 8;
+        let currentPage = 1;
+        let allMessages = [];
+        let filteredMessages = [];
+        let currentMessageId = null;
+        let currentFilter = 'all';
 
-    // متغيرات التطبيق
-    let currentMessages = [];
-    let currentMessageId = null;
-    let currentFilter = 'all';
+        // دالة لجلب CSRF Token
         function getCookie(name) {
             let cookieValue = null;
             if (document.cookie && document.cookie !== '') {
@@ -872,277 +1811,271 @@
             }
             return cookieValue;
         }
-    // دالة لجلب الرسائل من API
-    async function fetchMessages() {
-        try {
-            const response = await fetch('/api/contact-view/');
-            if (!response.ok) {
-                throw new Error('فشل في جلب البيانات');
+
+        // تنسيق التاريخ إلى DD/MM/YYYY
+        function formatDate(date) {
+            const d = new Date(date);
+            const day = d.getDate();
+            const month = d.getMonth() + 1;
+            const year = d.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+
+        // جلب الرسائل من API
+        async function fetchMessages() {
+            try {
+                const response = await fetch(apiUrl);
+                if (!response.ok) throw new Error('فشل جلب الرسائل');
+                allMessages = await response.json();
+                allMessages = Array.isArray(allMessages) ? allMessages : [allMessages];
+                filteredMessages = [...allMessages];
+                updateMessageCounts();
+                applyFilters();
+            } catch (error) {
+                console.error('Error fetching messages:', error);
+                document.getElementById('messagesBody').innerHTML = '<tr><td colspan="6">حدث خطأ أثناء جلب الرسائل</td></tr>';
             }
-            const data = await response.json();
-            currentMessages = Array.isArray(data) ? data : [data]; // تحويل البيانات إلى مصفوفة إذا لم تكن
-            renderMessages(currentMessages);
-            renderPagination();
-        } catch (error) {
-            console.error('حدث خطأ:', error);
-            messagesList.innerHTML = `<li class="message-item">حدث خطأ في جلب الرسائل. يرجى المحاولة لاحقاً.</li>`;
-        }
-    }
-
-    // دالة لعرض الرسائل
-    function renderMessages(messages) {
-        messagesList.innerHTML = '';
-
-        if (messages.length === 0) {
-            messagesList.innerHTML = `<li class="message-item">لا توجد رسائل لعرضها</li>`;
-            return;
         }
 
-        messages.forEach(message => {
-            const messageItem = document.createElement('li');
-            messageItem.className = `message-item ${!message.is_read ? 'unread' : ''}`;
-            messageItem.dataset.id = message.id;
-            
-            // تنسيق التاريخ
-            const date = new Date(message.created_at);
-            const formattedDate = date.toLocaleDateString('ar-EG', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
+        // تحديث عدد الرسائل لكل حالة
+        function updateMessageCounts() {
+            const counts = {
+                all: allMessages.length,
+                unread: allMessages.filter(msg => !msg.is_read).length
+            };
+            document.getElementById('totalMessages').textContent = counts.all;
+            document.getElementById('unreadMessages').textContent = counts.unread;
+        }
+
+        // تطبيق الفلاتر والبحث
+        function applyFilters() {
+            const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+            filteredMessages = allMessages.filter(msg => {
+                const matchesSearch = msg.full_name.toLowerCase().includes(searchQuery) || 
+                                    msg.subject.toLowerCase().includes(searchQuery);
+                const matchesFilter = currentFilter === 'all' || 
+                                    (currentFilter === 'unread' && !msg.is_read);
+                return matchesSearch && matchesFilter;
             });
 
-            messageItem.innerHTML = `
-                <div class="message-header">
-                    <div>
-                        <div class="message-sender">${message.full_name}</div>
-                        <div class="message-email">${message.email}</div>
-                    </div>
-                    <div class="message-date">${formattedDate}</div>
-                </div>
-                <div class="message-subject">${message.subject}</div>
-                <div class="message-content">${message.message.substring(0, 100)}...</div>
-                <div class="message-actions">
-                    <button class="action-btn reply-btn" data-id="${message.id}">
-                        <span>رد</span>
-                        <i class="fas fa-reply"></i>
-                    </button>
-                    <button class="action-btn delete-btn" data-id="${message.id}">
-                        <span>حذف</span>
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
+            renderMessages();
+            renderPagination();
+        }
+
+        // عرض الرسائل في الجدول
+        function renderMessages() {
+            const start = (currentPage - 1) * messagesPerPage;
+            const end = start + messagesPerPage;
+            const paginatedMessages = filteredMessages.slice(start, end);
+            const tbody = document.getElementById('messagesBody');
+            tbody.innerHTML = '';
+
+            if (paginatedMessages.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6">لا توجد رسائل لعرضها</td></tr>';
+                return;
+            }
+
+            paginatedMessages.forEach(msg => {
+                const formattedDate = formatDate(msg.created_at);
+                const row = `
+                    <tr>
+                        <td>${msg.full_name}</td>
+                        <td>${msg.email}</td>
+                        <td>${msg.subject}</td>
+                        <td>${formattedDate}</td>
+                        <td><span class="${msg.is_read ? 'is-read' : 'not-read'}">${msg.is_read ? 'مقروء' : 'غير مقروء'}</span></td>
+                        <td id="messageActions">
+                            <button class="action-btn view" onclick="showMessageDetails(${msg.id})"><i class="fas fa-eye"></i></button>
+                            <button class="action-btn delete-btn" onclick="deleteMessage(${msg.id})"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        // عرض الترقيم الصفحي
+        function renderPagination() {
+            const totalPages = Math.ceil(filteredMessages.length / messagesPerPage);
+            const pagination = document.getElementById('pagination');
+            pagination.innerHTML = '';
+
+            // زر السابق
+            pagination.innerHTML += `
+                <button class="page-btn" onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
+                    <i class="fas fa-angle-right"></i>
+                </button>
             `;
 
-            messagesList.appendChild(messageItem);
-        });
+            // الصفحة الأولى
+            pagination.innerHTML += `
+                <button class="page-btn ${currentPage === 1 ? 'active' : ''}" onclick="changePage(1)">1</button>
+            `;
 
-        // إضافة مستمعي الأحداث للرسائل
-        document.querySelectorAll('.message-item').forEach(item => {
-            item.addEventListener('click', (e) => {
-                if (!e.target.closest('.message-actions')) {
-                    const messageId = item.dataset.id;
-                    showMessageDetails(messageId);
-                }
-            });
-        });
-
-        // مستمعي الأحداث لأزرار الحذف والرد
-        document.querySelectorAll('.delete-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                deleteMessage(btn.dataset.id);
-            });
-        });
-
-        document.querySelectorAll('.reply-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                replyToMessage(btn.dataset.id);
-            });
-        });
-    }
-
-    // دالة لعرض تفاصيل الرسالة
-    async function showMessageDetails(messageId) {
-        try {
-            const response = await fetch(`/api/contact-view/${messageId}/`);
-            if (!response.ok) {
-                throw new Error('فشل في جلب تفاصيل الرسالة');
-            }
-            const message = await response.json();
-            
-            // تحديث حالة القراءة إذا كانت غير مقروءة
-            if (!message.is_read) {
-                await markAsRead(messageId);
+            // إظهار "..." إذا كان هناك فجوة
+            if (totalPages > 3 && currentPage > 2) {
+                pagination.innerHTML += `<span>...</span>`;
             }
 
-            // تنسيق التاريخ
-            const date = new Date(message.created_at);
-            const formattedDate = date.toLocaleDateString('ar-EG', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            });
+            // الصفحات المحيطة بالصفحة الحالية
+            const startPage = Math.max(2, currentPage - 1);
+            const endPage = Math.min(totalPages - 1, currentPage + 1);
+            for (let i = startPage; i <= endPage; i++) {
+                pagination.innerHTML += `
+                    <button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">${i}</button>
+                `;
+            }
 
-            // تعبئة البيانات في النافذة المنبثقة
-            modalFullName.textContent = message.full_name;
-            modalEmail.textContent = message.email;
-            modalSubject.textContent = message.subject;
-            modalDate.textContent = formattedDate;
-            modalMessage.textContent = message.message;
-            
-            currentMessageId = messageId;
-            messageModal.classList.add('active');
-            
-            // تحديث القائمة لتعكس حالة القراءة
-            fetchMessages();
-        } catch (error) {
-            console.error('حدث خطأ:', error);
-            alert('حدث خطأ في عرض تفاصيل الرسالة');
+            // إظهار "..." إذا كان هناك فجوة قبل الصفحة الأخيرة
+            if (totalPages > 3 && currentPage < totalPages - 1) {
+                pagination.innerHTML += `<span>...</span>`;
+            }
+
+            // الصفحة الأخيرة
+            if (totalPages > 1) {
+                pagination.innerHTML += `
+                    <button class="page-btn ${currentPage === totalPages ? 'active' : ''}" onclick="changePage(${totalPages})">${totalPages}</button>
+                `;
+            }
+
+            // زر التالي
+            pagination.innerHTML += `
+                <button class="page-btn" onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
+                    <i class="fas fa-angle-left"></i>
+                </button>
+            `;
         }
-    }
 
-    // دالة لتحديد الرسالة كمقروءة
-    async function markAsRead(messageId) {
-        try {
-            const response = await fetch(`/api/contact-view/${messageId}/`, {
-                method: 'DELETE',
-                headers: {
-                    'X-CSRFToken': csrftoken,
-                    'Content-Type': 'application/json'
-                },
-                credentials: 'include',
-                body: JSON.stringify({ is_read: true })
-            });
-            
-            if (!response.ok) {
-                throw new Error('فشل في تحديث حالة الرسالة');
+        // تغيير الصفحة
+        function changePage(page) {
+            const totalPages = Math.ceil(filteredMessages.length / messagesPerPage);
+            if (page >= 1 && page <= totalPages) {
+                currentPage = page;
+                renderMessages();
+                renderPagination();
             }
-        } catch (error) {
-            console.error('حدث خطأ:', error);
         }
-    }
 
-    // دالة لحذف الرسالة
+        // عرض تفاصيل الرسالة
+        async function showMessageDetails(messageId) {
+            try {
+                const message = allMessages.find(msg => msg.id === messageId);
+                if (!message) throw new Error('الرسالة غير موجودة');
 
-async function deleteMessage(messageId) {
-        if (!confirm('هل أنت متأكد من حذف هذا المنتج؟')) return;
-        
-        try {
-            const csrftoken = getCookie('csrftoken');
-            const response = await fetch(`/api/contact-view/${messageId}/`, {
-                method: 'DELETE',
-                headers: {
-                    'X-CSRFToken': csrftoken,
-                    'Content-Type': 'application/json'
-                },
-                credentials: 'include'
-            });
-
-            if (!response.ok) {
-                throw new Error(`Failed to delete product: ${response.status} ${response.statusText}`);
-            }
-// إغلاق النافذة المنبثقة إذا كانت مفتوحة
-                if (messageModal.classList.contains('active')) {
-                    messageModal.classList.remove('active');
+                // تحديث حالة القراءة
+                if (!message.is_read) {
+                    await markAsRead(messageId);
                 }
 
-        } catch (error) {
-            console.error('Error deleting product:', error);
-            alert(`حدث خطأ أثناء حذف المنتج: ${error.message}`);
-        }
-    }
-    // دالة للرد على الرسالة
-    function replyToMessage(messageId) {
-        const message = currentMessages.find(msg => msg.id == messageId);
-        if (message) {
-            alert(`سيتم فتح نافذة الرد على الرسالة من ${message.full_name} (${message.email})`);
-            // هنا يمكنك إضافة منطق إرسال الرد
-        }
-    }
+                const formattedDate = formatDate(message.created_at);
+                document.getElementById('modalFullName').textContent = message.full_name;
+                document.getElementById('modalEmail').textContent = message.email;
+                document.getElementById('modalSubject').textContent = message.subject;
+                document.getElementById('modalDate').textContent = formattedDate;
+                document.getElementById('modalMessage').textContent = message.message;
+                document.getElementById('messageError').textContent = '';
 
-    // دالة لتصفية الرسائل
-    function filterMessages(filter) {
-        currentFilter = filter;
-        
-        // تحديث حالة أزرار التصفية
-        filterButtons.forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.filter === filter);
+                currentMessageId = messageId;
+                document.getElementById('messageModal').style.display = 'flex';
+            } catch (error) {
+                console.error('Error showing message details:', error);
+                document.getElementById('messageError').textContent = error.message || 'حدث خطأ أثناء عرض تفاصيل الرسالة';
+            }
+        }
+
+        // تحديث حالة الرسالة إلى مقروء
+        async function markAsRead(messageId) {
+            try {
+                const csrftoken = getCookie('csrftoken');
+                const response = await fetch(`${apiUrl}${messageId}/`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ is_read: true })
+                });
+                if (!response.ok) throw new Error('فشل تحديث حالة الرسالة');
+                const updatedMessage = await response.json();
+                const index = allMessages.findIndex(msg => msg.id === messageId);
+                if (index !== -1) {
+                    allMessages[index] = updatedMessage;
+                }
+                updateMessageCounts();
+                applyFilters();
+            } catch (error) {
+                console.error('Error marking message as read:', error);
+            }
+        }
+
+        // حذف الرسالة
+        async function deleteMessage(messageId) {
+            if (!confirm('هل أنت متأكد من حذف هذه الرسالة؟')) return;
+
+            try {
+                const csrftoken = getCookie('csrftoken');
+                const response = await fetch(`${apiUrl}${messageId}/`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken
+                    },
+                    credentials: 'include'
+                });
+                if (!response.ok) throw new Error('فشل حذف الرسالة');
+                allMessages = allMessages.filter(msg => msg.id !== messageId);
+                document.getElementById('messageModal').style.display = 'none';
+                currentMessageId = null;
+                applyFilters();
+                alert('تم حذف الرسالة بنجاح');
+            } catch (error) {
+                console.error('Error deleting message:', error);
+                document.getElementById('messageError').textContent = error.message || 'حدث خطأ أثناء حذف الرسالة';
+            }
+        }
+
+        // أحداث الفلاتر والبحث
+        document.getElementById('searchInput').addEventListener('input', () => {
+            currentPage = 1;
+            applyFilters();
         });
-        
-        let filteredMessages = [...currentMessages];
-        
-        if (filter === 'unread') {
-            filteredMessages = filteredMessages.filter(msg => !msg.is_read);
-        } else if (filter === 'important') {
-            // يمكنك إضافة منطق للرسائل المهمة إذا كان لديك حقل للإشارة إليها
-            filteredMessages = filteredMessages.filter(msg => msg.important); // هذا مثال فقط
-        }
-        
-        renderMessages(filteredMessages);
-    }
-
-    // دالة لعرض ترقيم الصفحات (يمكن تطويرها حسب احتياجاتك)
-    function renderPagination() {
-        // يمكنك تطوير هذه الدالة حسب احتياجاتك إذا كان API يدعم التقسيم إلى صفحات
-        const pagination = document.getElementById('pagination');
-        pagination.innerHTML = `
-            <li class="page-item disabled">
-                <a class="page-link" href="#" tabindex="-1">السابق</a>
-            </li>
-            <li class="page-item active">
-                <a class="page-link" href="#">1</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="#">2</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="#">التالي</a>
-            </li>
-        `;
-    }
-
-    // مستمعي الأحداث
-    document.addEventListener('DOMContentLoaded', () => {
-        fetchMessages();
-        
-        // تصفية الرسائل
-        filterButtons.forEach(btn => {
+        document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                filterMessages(btn.dataset.filter);
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentFilter = btn.dataset.filter;
+                currentPage = 1;
+                applyFilters();
             });
         });
-        
-        // إغلاق النافذة المنبثقة
-        closeModal.addEventListener('click', () => {
-            messageModal.classList.remove('active');
+
+        // إغلاق نافذة التفاصيل
+        document.querySelectorAll('.close').forEach(closeBtn => {
+            closeBtn.onclick = () => {
+                document.getElementById('messageModal').style.display = 'none';
+                currentMessageId = null;
+                document.getElementById('messageError').textContent = '';
+            };
         });
-        
-        // إغلاق النافذة المنبثقة عند النقر خارجها
-        messageModal.addEventListener('click', (e) => {
-            if (e.target === messageModal) {
-                messageModal.classList.remove('active');
+
+        // إغلاق النافذة عند النقر خارجها
+        window.onclick = (event) => {
+            const modal = document.getElementById('messageModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+                currentMessageId = null;
+                document.getElementById('messageError').textContent = '';
             }
+        };
+
+        // مستمع لحدث الحذف في النافذة
+        document.getElementById('deleteMessageBtn').addEventListener('click', () => {
+            if (currentMessageId) deleteMessage(currentMessageId);
         });
-        
-        // حذف الرسالة من النافذة المنبثقة
-        deleteMessageBtn.addEventListener('click', () => {
-            if (currentMessageId) {
-                deleteMessage(currentMessageId);
-            }
-        });
-        
-        // الرد على الرسالة من النافذة المنبثقة
-        replyMessageBtn.addEventListener('click', () => {
-            if (currentMessageId) {
-                replyToMessage(currentMessageId);
-            }
-        });
-    });
-</script>
+
+        // تحميل الرسائل عند تحميل الصفحة
+        fetchMessages();
+    </script>
 </body>
 </html>
